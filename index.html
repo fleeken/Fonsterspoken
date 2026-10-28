@@ -4,9 +4,9 @@
 <style>
 :root{color-scheme:dark;--purple:#b17cff;--pink:#ff4fc4}*{box-sizing:border-box}body{margin:0;background:#090611;color:#f8f2ff;font:15px system-ui,sans-serif}header{padding:18px 24px;background:linear-gradient(90deg,#111827,#080a12);border-bottom:1px solid #46305d}h1{margin:0;font-size:clamp(23px,3vw,35px)}header p{margin:5px 0;color:#cbb7e5}.app{display:grid;grid-template-columns:310px minmax(0,1fr);min-height:calc(100vh - 95px)}aside{padding:20px;background:#171022;border-right:1px solid #3d2b50}h2{font-size:17px;margin:20px 0 10px;color:#ead8ff}h2:first-child{margin-top:0}select,button{font:inherit;color:white;border:1px solid #74538f;background:#302043;border-radius:11px;padding:12px}select{width:100%}button{cursor:pointer;transition:background .15s}button:hover{background:#52306f}button.primary{background:linear-gradient(90deg,#a148c8,#de448c);border:0;font-weight:700}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{background:#2b1d3a;border:1px solid #5d4077;border-radius:12px;padding:11px;cursor:pointer}.checks input{accent-color:#d86fff}label.line{display:block;margin:15px 0 6px}input[type=range]{width:100%;accent-color:#d46dff}.hint{font-size:12px;color:#b9a9c8;line-height:1.6}main{padding:16px;min-width:0}.screen{height:min(75vh,750px);min-height:350px;position:relative;background:#000;border:1px solid #263246;border-radius:16px;overflow:hidden}.screen canvas{display:block;width:100%;height:100%;filter:brightness(var(--scene-brightness,1.3))}.screen.mirrored canvas{transform:scaleX(-1)}.screen:fullscreen{height:100vh;width:100vw;border:0;border-radius:0}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}.toolbar button{flex:1;min-width:130px}.tag{display:inline-block;color:#f2b4e6;background:#402040;padding:5px 9px;border-radius:99px;font-size:12px}.status{font-size:13px;color:#bda9d2}.note{color:#a99abb;font-size:12px} @media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0}.screen{height:55vh;min-height:300px}}
 </style></head>
-<body><header><h1>👻 FönsterSpöken <span class="tag">SKUGGSPEL</span></h1><p>Fyra mystiska gestalter i mörkret • För projektor och fönster</p></header>
+<body><header><h1>👻 FönsterSpöken <span class="tag">SKUGGSPEL</span></h1><p>Fem mystiska gestalter i mörkret • För projektor och fönster</p></header>
 <div class="app"><aside>
-<h2>🕺 Dansstudio</h2><p class="hint">Mystiska 3D-gestalter med skuggor, dimma och långsamma vändningar.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
+<h2>🕺 Dansstudio</h2><p class="hint">Mystiska 3D-gestalter med skuggor, dimma och långsamma vändningar.</p><h2>🎃 Fem dansare</h2><p class="hint">Spöke, halloweenpumpa, skelett, ljus och en häxa på flygande kvast.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
 <label class="line" for="brightness">Ljusstyrka: <output id="bval">130%</output></label><input id="brightness" type="range" min="100" max="250" value="130" step="5"><label class="line"><input id="mirror" type="checkbox"> Spegelvänd för fönster</label>
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
@@ -90,6 +90,7 @@ if(pumpkin){for(const side of [-1,1]){const eye=new THREE.Mesh(new THREE.ConeGeo
 if(skeleton){for(const side of [-1,1]){blob(body,dark,side*.25,1.35,.47,.21,.25,.075);blob(body,dark,side*.25,1.35,.53,.11,.16,.035)}blob(body,dark,0,.96,.51,.11,.08,.06);for(let j=-3;j<=3;j++)tube(body,dark,j*.078,.82,.49,.012,.13,.02)}
 return {root,body,arms,forearms,legs,shins,aura,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday','spin'][i],i};
 }
+status.textContent='Version med häxa på kvast – fem figurer laddade.';
 const types=['ghost','pumpkin','skeleton','candle','witch'],names=['👻 Spöke','🎃 Halloweenpumpa','💀 Skelett','🕯️ Ljus','🧙 Häxa på kvast'];
 const moves={auto:'Auto – växla dans',shuffle:'Shuffle',floss:'Floss',bounce:'Bounce',robot:'Robot',wave:'Wave',macarena:'Macarena',gangnam:'Gangnam Style',wednesday:'Wednesday',ymca:'YMCA',chicken:'Fågeldansen',jerusalema:'Jerusalema',thriller:'Thriller',spin:'Snurrdans',moonwalk:'Moonwalk'};
 const dancers=types.map(makeFigure);
@@ -103,9 +104,9 @@ const dt=Math.min((now-last)/1000||0,.05);last=now;
 if(playing)time+=dt*(+speed.value/100);
 dancers.forEach((p,i)=>{
 const t=time,cycle=t*(.055+i*.008)+[0,.2,.4,.6,.8][i],v=wrap(cycle),margin=2.5;
-const horizontal=i===0||i===2||i===4,forward=i===0||i===3;
-const x=horizontal?(forward?-viewW/2-margin+(viewW+2*margin)*v:viewW/2+margin-(viewW+2*margin)*v):Math.sin(t*.48+i*2.1)*viewW*.35;
-const y=horizontal?Math.sin(t*.61+i*2)*viewH*.29:(forward?-viewH/2-margin+(viewH+2*margin)*v:viewH/2+margin-(viewH+2*margin)*v);
+const horizontal=i===0||i===2,forward=i===0||i===3;
+const x=i===4?Math.sin(t*.32)*viewW*.26:(horizontal?(forward?-viewW/2-margin+(viewW+2*margin)*v:viewW/2+margin-(viewW+2*margin)*v):Math.sin(t*.48+i*2.1)*viewW*.35);
+const y=i===4?1.05+Math.sin(t*.7)*.8:(horizontal?Math.sin(t*.61+i*2)*viewH*.29:(forward?-viewH/2-margin+(viewH+2*margin)*v:viewH/2+margin-(viewH+2*margin)*v));
 p.root.position.set(x,y,-.5+Math.sin(t*.8+i)*1.2);
 const move=p.move==='auto'?Object.keys(moves).filter(k=>k!=='auto')[(Math.floor(t/7)+i*3)%13]:p.move;
 const q=t*(move==='robot'?3.1:6.4)+p.seed,step=Math.sin(q),other=Math.sin(q+Math.PI);
@@ -114,7 +115,7 @@ p.root.rotation.y=spin;p.aura.material.opacity=.42+Math.sin(t*.9+i)*.17;p.root.r
 p.body.rotation.z=Math.sin(q*.5)*.15;
 p.body.rotation.x=Math.sin(q*.45)*.12;
 p.body.position.y=Math.abs(step)*.16+(p.type==='witch'?Math.sin(t*1.8)*.24:0);
-p.body.rotation.y=Math.sin(q*.4)*.23;p.root.scale.setScalar(.94+Math.sin(t*.7+i)*.035);
+p.body.rotation.y=Math.sin(q*.4)*.23;p.root.scale.setScalar((i===4?1.2:.94)+Math.sin(t*.7+i)*.035);
 const left=p.arms[0],right=p.arms[1];
 left.rotation.z=.35+step*.8;right.rotation.z=-.35-other*.8;
 left.rotation.x=Math.sin(q+.5)*.65;right.rotation.x=Math.sin(q+2)*.65;
@@ -136,7 +137,7 @@ if(move==='spin'){left.rotation.z=1.6;right.rotation.z=-1.6;p.body.rotation.z=Ma
 });
 stars.rotation.z=Math.sin(time*.045)*.025;mist.rotation.z=Math.sin(time*.08)*.09;mist.position.x=Math.sin(time*.12)*1.8;rim.intensity=95+Math.sin(time*.5)*15;warm.intensity=48+Math.sin(time*1.7)*9;renderer.render(scene,camera);requestAnimationFrame(animate)
 }
-$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'Fyra 3D-figurer dansar och snurrar runt på hela scenen.':'Dansen pausad'};
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'Fem 3D-figurer dansar och snurrar runt på hela scenen.':'Dansen pausad'};
 $('shuffle').onclick=()=>{dancers.forEach((p,i)=>{p.move=Object.keys(moves).filter(k=>k!=='auto')[(i*3+Math.floor(Math.random()*12))%13];holder.children[i].querySelector('select').value=p.move})};
 $('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen().catch(()=>{status.textContent='Helskärm kunde inte startas i den här webbläsaren.'});
 $('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);
