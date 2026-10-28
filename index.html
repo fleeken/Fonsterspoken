@@ -17,12 +17,12 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.m
 const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x010207);scene.fog=new THREE.FogExp2(0x060b13,.037);
 const camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
-let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
-scene.add(new THREE.HemisphereLight(0x627b9e,0x100c18,.85));
-const light=new THREE.DirectionalLight(0xa9b9df,1.45);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
-const rim=new THREE.PointLight(0x5469c9,80,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xff6320,32,30);warm.position.set(-7,-2,6);scene.add(warm);
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.85;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
+scene.add(new THREE.HemisphereLight(0xb1c4de,0x283144,2.05));
+const light=new THREE.DirectionalLight(0xd7e5ff,2.6);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
+const rim=new THREE.PointLight(0x819be6,105,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xffa05b,55,30);warm.position.set(-7,-2,6);scene.add(warm);
 const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
-const white=mat(0x77899a),dark=mat(0x070b12),orange=mat(0x78320d),bone=mat(0x88897e),purple=mat(0x242332),wax=mat(0x8d8474),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
+const white=mat(0xaebdcb),dark=mat(0x070b12),orange=mat(0xb65a19),bone=mat(0xc6c5b4),purple=mat(0x242332),wax=mat(0xc5bca7),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
 const sphere=new THREE.SphereGeometry(1,32,24),cylinder=new THREE.CylinderGeometry(1,1,1,20);
 function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
@@ -116,11 +116,11 @@ if(move==='jerusalema'){p.legs[0].rotation.x=step*.95;p.legs[1].rotation.x=other
 if(move==='moonwalk'){p.legs[0].rotation.x=step*.32;p.legs[1].rotation.x=other*.32;p.body.rotation.z= -.12}
 if(move==='spin'){left.rotation.z=1.6;right.rotation.z=-1.6;p.body.rotation.z=Math.sin(q)*.12}
 });
-stars.rotation.z=Math.sin(time*.045)*.025;mist.rotation.z=Math.sin(time*.08)*.09;mist.position.x=Math.sin(time*.12)*1.8;rim.intensity=62+Math.sin(time*.5)*22;warm.intensity=27+Math.sin(time*1.7)*9;renderer.render(scene,camera);requestAnimationFrame(animate)
+stars.rotation.z=Math.sin(time*.045)*.025;mist.rotation.z=Math.sin(time*.08)*.09;mist.position.x=Math.sin(time*.12)*1.8;rim.intensity=95+Math.sin(time*.5)*15;warm.intensity=48+Math.sin(time*1.7)*9;renderer.render(scene,camera);requestAnimationFrame(animate)
 }
 $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'Fyra 3D-figurer dansar och snurrar runt på hela scenen.':'Dansen pausad'};
 $('shuffle').onclick=()=>{dancers.forEach((p,i)=>{p.move=Object.keys(moves).filter(k=>k!=='auto')[(i*3+Math.floor(Math.random()*12))%13];holder.children[i].querySelector('select').value=p.move})};
-$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();
+$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen().catch(()=>{status.textContent='Helskärm kunde inte startas i den här webbläsaren.'});
 $('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);
 speed.oninput=()=>$('sval').textContent=speed.value+'%';
 addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);
