@@ -6,17 +6,15 @@
 </style></head>
 <body><header><h1>👻 FönsterSpöken <span class="tag">DANSSTUDIO</span></h1><p>Halloweenfigurer med egna koreografier • Gratis • För projektor och fönster</p></header>
 <div class="app"><aside>
-<h2>🕺 Dansstudio</h2><p class="hint">Välj rörelser för varje figur och se dem dansa.</p><h2>🎃 Välj figurer</h2><div class="checks"><label><input type="checkbox" value="ghost" checked> 👻 Spöken</label><label><input type="checkbox" value="pumpkin" checked> 🎃 Pumpor</label><label><input type="checkbox" value="skeleton" checked> 💀 Skelett</label><label><input type="checkbox" value="candle" checked> 🕯️ Ljus</label></div>
-<label class="line" for="number">Antal dansare: <output id="nval">6</output></label><input id="number" type="range" min="1" max="12" value="6">
-<h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
+<h2>🕺 Dansstudio</h2><p class="hint">Välj rörelser för varje figur och se dem dansa.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
 <label class="line"><input id="mirror" type="checkbox"> Spegelvänd för fönster</label>
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
 <div class="toolbar"><button id="play" class="primary">▶ Starta dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
-<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Figurerna dansar över hela skärmen, lämnar bilden och kommer tillbaka från andra sidan.</p></main></div>
+<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fyra dansare rör sig både vågrätt och lodrätt över hela skärmen, försvinner helt och kommer tillbaka från motsatt kant.</p></main></div>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),number=$('number'),speed=$('speed'),status=$('status');
+const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),speed=$('speed'),status=$('status');
 let playing=false,phase=0,last=0,people=[],beatPulse=0;
 const danceMoves=['bounce','shuffle','floss','robot','wave','thriller','gangnam','macarena','wednesday','ymca','chicken','jerusalema'];
 function chosen(){return [...document.querySelectorAll('.checks input:checked')].map(x=>x.value)}
@@ -32,8 +30,11 @@ function updateDancerControls(){
  sel.value=p.move;sel.onchange=()=>{p.move=sel.value};row.append(title,sel);holder.append(row);
  });
 }
-function reset(){let types=chosen();if(!types.length){types=['ghost'];document.querySelector('.checks input').checked=true}
-const prev=people;people=Array.from({length:+number.value},(_,i)=>({type:types[i%types.length],seed:prev[i]?.seed??Math.random()*7,size:.75+Math.random()*.35,order:i,move:prev[i]?.move||['thriller','gangnam','macarena','wednesday','shuffle','ymca','chicken','jerusalema','floss','robot','wave','bounce'][i%12]}));updateDancerControls();}
+function reset(){
+const types=['ghost','pumpkin','skeleton','candle'],defaults=['thriller','gangnam','shuffle','wednesday'];
+const prev=people;people=types.map((type,i)=>({type,seed:prev[i]?.seed??(i*.71+.23),size:1,order:i,move:prev[i]?.move||defaults[i]}));
+updateDancerControls();
+}
 function resize(){const r=screen.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d))}
 function character(p,x,y,scale,t,mode){
 const q=t*Math.PI*2,si=Math.sin,co=Math.cos,cycle=(t%4+4)%4,phase=Math.floor(cycle),ease=v=>v*v*(3-2*v),blend=ease(cycle-phase),sway=si(q*.5+p.seed),bounce=Math.abs(si(q)),step=si(q),opp=si(q+Math.PI);
@@ -97,33 +98,44 @@ ctx.shadowColor='#ff9c12';ctx.shadowBlur=25;ctx.fillStyle='#ffb926';ctx.beginPat
 }
 ctx.restore();
 }
-function render(now){const dt=Math.min((now-last)/1000||0,.06);last=now;const w=canvas.width,h=canvas.height;ctx.fillStyle='#020104';ctx.fillRect(0,0,w,h);
-const energy=+speed.value/100;if(playing)phase+=dt*1.85*energy;beatPulse=playing?(1-Math.abs((phase%1)*2-1)):.15;
-const glow=ctx.createRadialGradient(w*.5,h*.75,10,w*.5,h*.6,w*.8);glow.addColorStop(0,'rgba(98,29,123,'+(.16+beatPulse*.12)+')');glow.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
-ctx.strokeStyle='rgba(180,75,224,.23)';ctx.lineWidth=Math.max(1,w/800);ctx.beginPath();ctx.moveTo(0,h*.86);ctx.lineTo(w,h*.86);ctx.stroke();
+function render(now){
+const dt=Math.min((now-last)/1000||0,.06);last=now;const w=canvas.width,h=canvas.height;
+ctx.fillStyle='#020104';ctx.fillRect(0,0,w,h);
+const energy=+speed.value/100;if(playing)phase+=dt*1.85*energy;
+beatPulse=playing?(1-Math.abs((phase%1)*2-1)):.15;
+const glow=ctx.createRadialGradient(w*.5,h*.55,10,w*.5,h*.5,w*.9);
+glow.addColorStop(0,'rgba(98,29,123,'+(.16+beatPulse*.12)+')');glow.addColorStop(1,'rgba(0,0,0,0)');
+ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
 const moveIndex=Math.floor(phase/8)%danceMoves.length;
-const count=people.length,cols=Math.ceil(Math.sqrt(count*1.8)),rows=Math.ceil(count/cols);
-const baseScale=Math.min(w/(cols*130),h/(rows*175),2.5);
+const scale=Math.min(w/420,h/300,2.25),margin=115*scale;
+const spanX=w+margin*2,spanY=h+margin*2;
 const wrap=(v,span)=>((v%span)+span)%span;
 people.forEach((p,i)=>{
- const row=Math.floor(i/cols),col=i%cols,ct=Math.min(cols,count-row*cols);
- const scale=baseScale*(.88+.12*Math.sin(phase*.28+p.seed));
- const margin=100*scale;
- const laneY=h*(.17+(row+.5)*.68/rows);
- const direction=i%2===0?1:-1;
- const journey=(phase*(.024+(i%4)*.006)*energy+p.seed*.07+i/count);
- const trackX=wrap(journey,1);
- const crossingX=direction>0?-margin+(w+margin*2)*trackX:w+margin-(w+margin*2)*trackX;
- const homeX=w*(col+1)/(ct+1);
- const pattern=Math.floor((phase/16+i)%3);
- const travelX=pattern===0?crossingX:pattern===1?homeX+Math.sin(phase*.22+p.seed)*w*.38:crossingX;
- const px=travelX;
- const py=laneY+Math.sin(phase*.52+p.seed)*h*.07+Math.sin(phase*.16+i)*h*.035;
- const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
- character(p,px,py,scale,phase+p.seed*.08,personalMove);
+// Fyra oberoende banor, över hela scenen. Alla går HELT utanför duken och kommer tillbaka från motsatt kant.
+const t=phase*.55;
+const offset=[0,.27,.52,.78][i];
+const horizontal= i===0||i===2;
+const direction=i===0||i===3?1:-1;
+let px,py;
+if(horizontal){
+ const progress=wrap(t*(i===0?.105:.083)+offset,1);
+ px=direction>0?-margin+progress*spanX:w+margin-progress*spanX;
+ py=h*(i===0?.24:.74)+Math.sin(t*.9+i*2.2)*h*.19;
+}else{
+ const progress=wrap(t*(i===1?.09:.073)+offset,1);
+ py=direction>0?-margin+progress*spanY:h+margin-progress*spanY;
+ px=w*(i===1?.27:.74)+Math.sin(t*.75+i*1.9)*w*.22;
+}
+// Sidosteg och stora kroppsrörelser medan figuren korsar bilden.
+px+=Math.sin(phase*.8+p.seed)*Math.min(w*.04,38*scale);
+py+=Math.cos(phase*.65+p.seed)*Math.min(h*.035,22*scale);
+const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
+character(p,px,py,scale*(.95+.07*Math.sin(phase*.38+p.seed)),phase+p.seed*.08,personalMove);
 });
-ctx.fillStyle='rgba(221,148,255,.8)';for(let i=0;i<20;i++){const x=(i*83.7%100)/100*w,y=(i*43.3%100)/100*h;ctx.globalAlpha=.2+.25*Math.sin(phase*2+i)**2;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;requestAnimationFrame(render)}
+ctx.fillStyle='rgba(221,148,255,.8)';for(let i=0;i<20;i++){const x=(i*83.7%100)/100*w,y=(i*43.3%100)/100*h;ctx.globalAlpha=.2+.25*Math.sin(phase*2+i)**2;ctx.fillRect(x,y,2,2)}
+ctx.globalAlpha=1;requestAnimationFrame(render)
+}
 $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'🕺 Alla figurer dansar med egna moves!':'Dansen pausad'};
-$('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);number.oninput=()=>{$('nval').textContent=number.value;reset()};speed.oninput=()=>$('sval').textContent=speed.value+'%';document.querySelectorAll('.checks input').forEach(x=>x.onchange=reset);addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
+$('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);speed.oninput=()=>$('sval').textContent=speed.value+'%';addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
 })();
 </script></body></html>
