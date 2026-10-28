@@ -13,7 +13,7 @@
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
 <div class="toolbar"><button id="play" class="primary">▶ Starta dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
-<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Figurerna har egna dansrörelser och kan visas i helskärm.</p></main></div>
+<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Figurerna dansar över hela skärmen, lämnar bilden och kommer tillbaka från andra sidan.</p></main></div>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),number=$('number'),speed=$('speed'),status=$('status');
@@ -102,12 +102,26 @@ const energy=+speed.value/100;if(playing)phase+=dt*1.85*energy;beatPulse=playing
 const glow=ctx.createRadialGradient(w*.5,h*.75,10,w*.5,h*.6,w*.8);glow.addColorStop(0,'rgba(98,29,123,'+(.16+beatPulse*.12)+')');glow.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
 ctx.strokeStyle='rgba(180,75,224,.23)';ctx.lineWidth=Math.max(1,w/800);ctx.beginPath();ctx.moveTo(0,h*.86);ctx.lineTo(w,h*.86);ctx.stroke();
 const moveIndex=Math.floor(phase/8)%danceMoves.length;
-const cols=Math.ceil(Math.sqrt(people.length*1.8)),rows=Math.ceil(people.length/cols),sz=Math.min(w/(cols*155),h/(rows*195),2.1);
-people.forEach((p,i)=>{const row=Math.floor(i/cols),col=i%cols,ct=Math.min(cols,people.length-row*cols);
-const sway=Math.sin(phase*.35+p.seed)*w*.035,travel=Math.sin(phase*.12+p.seed+i*.9)*w*.075;
-const px=w*((col+1)/(ct+1))+sway+travel+Math.sin(phase*.21+i*2)*w*.055,py=h*(.21+(row+.85)*.65/rows)+Math.sin(phase*.7+p.seed)*h*.038;
-const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
-character(p,px,py,sz*(1+Math.sin(phase*.5+p.seed)*.07),phase+p.seed*.08,personalMove)});
+const count=people.length,cols=Math.ceil(Math.sqrt(count*1.8)),rows=Math.ceil(count/cols);
+const baseScale=Math.min(w/(cols*130),h/(rows*175),2.5);
+const wrap=(v,span)=>((v%span)+span)%span;
+people.forEach((p,i)=>{
+ const row=Math.floor(i/cols),col=i%cols,ct=Math.min(cols,count-row*cols);
+ const scale=baseScale*(.88+.12*Math.sin(phase*.28+p.seed));
+ const margin=100*scale;
+ const laneY=h*(.17+(row+.5)*.68/rows);
+ const direction=i%2===0?1:-1;
+ const journey=(phase*(.024+(i%4)*.006)*energy+p.seed*.07+i/count);
+ const trackX=wrap(journey,1);
+ const crossingX=direction>0?-margin+(w+margin*2)*trackX:w+margin-(w+margin*2)*trackX;
+ const homeX=w*(col+1)/(ct+1);
+ const pattern=Math.floor((phase/16+i)%3);
+ const travelX=pattern===0?crossingX:pattern===1?homeX+Math.sin(phase*.22+p.seed)*w*.38:crossingX;
+ const px=travelX;
+ const py=laneY+Math.sin(phase*.52+p.seed)*h*.07+Math.sin(phase*.16+i)*h*.035;
+ const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
+ character(p,px,py,scale,phase+p.seed*.08,personalMove);
+});
 ctx.fillStyle='rgba(221,148,255,.8)';for(let i=0;i<20;i++){const x=(i*83.7%100)/100*w,y=(i*43.3%100)/100*h;ctx.globalAlpha=.2+.25*Math.sin(phase*2+i)**2;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;requestAnimationFrame(render)}
 $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'🕺 Alla figurer dansar med egna moves!':'Dansen pausad'};
 $('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);number.oninput=()=>{$('nval').textContent=number.value;reset()};speed.oninput=()=>$('sval').textContent=speed.value+'%';document.querySelectorAll('.checks input').forEach(x=>x.onchange=reset);addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
