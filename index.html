@@ -11,7 +11,7 @@
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
 <div class="toolbar"><button id="play" class="primary">▶ Starta dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
-<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fyra 3D-figurer snurrar, dansar över hela skärmen och kommer tillbaka från motsatt kant.</p></main></div>
+<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fem 3D-figurer snurrar, dansar över hela skärmen och kommer tillbaka från motsatt kant.</p></main></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
@@ -34,8 +34,8 @@ const mistGeo=new THREE.BufferGeometry(),mistCount=210,mistPos=new Float32Array(
 const stars=new THREE.Group();scene.add(stars);const starMaterial=new THREE.MeshBasicMaterial({color:0x758ca5,transparent:true,opacity:.36});for(let j=0;j<85;j++){const x=Math.sin(j*127.1)*22,y=Math.cos(j*79.3)*12;const dot=new THREE.Mesh(new THREE.SphereGeometry(.012+(j%5)*.005,6,4),starMaterial);dot.position.set(x,y,-11);stars.add(dot)}
 function makeFigure(type,i){
 const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);const aura=new THREE.Sprite(new THREE.SpriteMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(79,113,174,.21)');g.addColorStop(.35,'rgba(40,58,108,.11)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})(),transparent:true,depthWrite:false}));aura.scale.set(5,6,1);aura.position.z=-1.4;root.add(aura);
-const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle';
-const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:white;
+const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle',witch=type==='witch';
+const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:witch?purple:white;
 const detail=(color,rough=.55,metal=0)=>new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide});
 const ivory=detail(0xb9b7a8,.8),deepOrange=detail(0x632c13,.94),rib=detail(0x85877f,.9),violet=detail(0x151721,.94),shine=detail(0x8b98a3,.55),bronze=detail(0x55442c,.88,.1);
 const torus=(parent,m,x,y,z,major,minor,rotation=0)=>{const mesh=new THREE.Mesh(new THREE.TorusGeometry(major,minor,10,40),m);mesh.position.set(x,y,z);mesh.rotation.z=rotation;parent.add(mesh);return mesh};
@@ -58,21 +58,39 @@ if(ghost){
  for(let j=0;j<5;j++){const yy=.55-j*.22;for(const side of [-1,1])curvedBone(body,bone,[[side*.07,yy,.14],[side*.35,yy+.08,.22],[side*.46,yy-.06,.13],[side*.15,yy-.12,.05]],.055)}
  blob(body,bone,0,1.26,0,.62,.67,.49);blob(body,bone,0,1.49,.13,.49,.39,.4);for(const side of [-1,1])blob(body,bone,side*.49,1.01,.02,.19,.32,.37);
  blob(body,bone,0,.79,.07,.45,.26,.44);
-}else{
+}else if(candle){
  lathe(body,wax,[[0,-.79],[.62,-.79],[.67,-.62],[.67,.6],[.65,.75],[.57,.81],[.4,.77],[.2,.8],[0,.8]]);for(let j=0;j<5;j++){const x=-.47+j*.23;blob(body,ivory,x,.67+(j%2)*.06,.22,.12,.19,.19)}torus(body,bronze,0,-.61,.02,.57,.09);
  for(let j=0;j<7;j++){const a=j*Math.PI*2/7;blob(body,ivory,Math.sin(a)*.59,.7-(j%3)*.13,Math.cos(a)*.59,.09,.24,.09)}
  tube(body,dark,0,1.72,0,.045,.28,.045);blob(body,gold,0,1.87,0,.25,.52,.19);
  const flame=new THREE.MeshBasicMaterial({color:0xffd76a});
  blob(body,flame,0,1.94,.02,.21,.43,.18);
 }
+
+// Häxa på kvast: spetsig hatt, sliten kappa, ansikte, hår och kvastskaft.
+if(witch){
+ const cloak=detail(0x252235),skin=detail(0x8b9c77),hair=detail(0x292a30),hat=detail(0x171621),bristle=detail(0x8e7351);
+ lathe(body,cloak,[[0,-1.22],[.85,-1.17],[.64,-.72],[.46,.15],[.34,.62],[0,.69]]);
+ blob(body,skin,0,1.12,.12,.38,.49,.33);
+ for(const side of [-1,1]){
+  for(let j=0;j<5;j++){const strand=blob(body,hair,side*(.31+j*.028),.81-j*.13,.03,.075,.43,.09);strand.rotation.z=side*.13}
+  blob(body,dark,side*.16,1.17,.425,.07,.095,.035);
+ }
+ const nose=blob(body,skin,0,1.02,.47,.105,.15,.21);nose.rotation.x=-.25;
+ blob(body,dark,0,.79,.39,.17,.04,.035);
+ const brim=new THREE.Mesh(new THREE.CylinderGeometry(.76,.8,.085,32),hat);brim.position.set(0,1.56,0);body.add(brim);
+ const crown=new THREE.Mesh(new THREE.ConeGeometry(.53,1.15,32),hat);crown.position.set(.1,2.12,0);crown.rotation.z=-.2;body.add(crown);
+ const band=new THREE.Mesh(new THREE.CylinderGeometry(.54,.56,.12,32),bronze);band.position.set(0,1.66,0);body.add(band);
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,3.7,12),bronze);shaft.rotation.z=Math.PI/2;shaft.position.set(0,-1.08,.46);body.add(shaft);
+ for(let j=0;j<13;j++){const a=j*Math.PI*2/13;const straw=blob(body,bristle,1.67+Math.sin(a)*.14,-1.08+Math.cos(a)*.17,.46+Math.sin(a)*.12,.48,.032,.035);straw.rotation.z=Math.sin(a)*.22}
+}
 // Restrained horror masks: deep cavities instead of cartoon eyes, blush and smiles.
 // Kusliga masker i stället för söta tecknade ansikten.
 if(ghost){for(const side of [-1,1]){const socket=blob(body,dark,side*.24,1.04,.64,.13,.23,.035);socket.rotation.z=side*.19;}blob(body,dark,0,.68,.68,.075,.2,.028)}
 if(pumpkin){for(const side of [-1,1]){const eye=new THREE.Mesh(new THREE.ConeGeometry(.19,.31,3),dark);eye.position.set(side*.27,1.27,.72);eye.rotation.z=side*.22;body.add(eye)}for(let j=-2;j<=2;j++){const tooth=blob(body,dark,j*.115,.94,.72,.045,.09,.028);tooth.rotation.z=j*.11}}
 if(skeleton){for(const side of [-1,1]){blob(body,dark,side*.25,1.35,.47,.21,.25,.075);blob(body,dark,side*.25,1.35,.53,.11,.16,.035)}blob(body,dark,0,.96,.51,.11,.08,.06);for(let j=-3;j<=3;j++)tube(body,dark,j*.078,.82,.49,.012,.13,.02)}
-return {root,body,arms,forearms,legs,shins,aura,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday'][i],i};
+return {root,body,arms,forearms,legs,shins,aura,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday','spin'][i],i};
 }
-const types=['ghost','pumpkin','skeleton','candle'],names=['👻 Spöke','🎃 Pumpa','💀 Skelett','🕯️ Ljus'];
+const types=['ghost','pumpkin','skeleton','candle','witch'],names=['👻 Spöke','🎃 Halloweenpumpa','💀 Skelett','🕯️ Ljus','🧙 Häxa på kvast'];
 const moves={auto:'Auto – växla dans',shuffle:'Shuffle',floss:'Floss',bounce:'Bounce',robot:'Robot',wave:'Wave',macarena:'Macarena',gangnam:'Gangnam Style',wednesday:'Wednesday',ymca:'YMCA',chicken:'Fågeldansen',jerusalema:'Jerusalema',thriller:'Thriller',spin:'Snurrdans',moonwalk:'Moonwalk'};
 const dancers=types.map(makeFigure);
 const holder=$('dancerControls');
@@ -84,8 +102,8 @@ function animate(now){
 const dt=Math.min((now-last)/1000||0,.05);last=now;
 if(playing)time+=dt*(+speed.value/100);
 dancers.forEach((p,i)=>{
-const t=time,cycle=t*(.055+i*.008)+[0,.25,.5,.75][i],v=wrap(cycle),margin=2.5;
-const horizontal=i===0||i===2,forward=i===0||i===3;
+const t=time,cycle=t*(.055+i*.008)+[0,.2,.4,.6,.8][i],v=wrap(cycle),margin=2.5;
+const horizontal=i===0||i===2||i===4,forward=i===0||i===3;
 const x=horizontal?(forward?-viewW/2-margin+(viewW+2*margin)*v:viewW/2+margin-(viewW+2*margin)*v):Math.sin(t*.48+i*2.1)*viewW*.35;
 const y=horizontal?Math.sin(t*.61+i*2)*viewH*.29:(forward?-viewH/2-margin+(viewH+2*margin)*v:viewH/2+margin-(viewH+2*margin)*v);
 p.root.position.set(x,y,-.5+Math.sin(t*.8+i)*1.2);
@@ -95,7 +113,7 @@ const spin=move==='spin'?t*2.1:move==='robot'?Math.floor(t*1.5)*Math.PI/2:Math.s
 p.root.rotation.y=spin;p.aura.material.opacity=.42+Math.sin(t*.9+i)*.17;p.root.rotation.z=Math.sin(t*.53+i)*.12;p.root.rotation.x=Math.sin(t*.37+i*1.7)*.14;
 p.body.rotation.z=Math.sin(q*.5)*.15;
 p.body.rotation.x=Math.sin(q*.45)*.12;
-p.body.position.y=Math.abs(step)*.16;
+p.body.position.y=Math.abs(step)*.16+(p.type==='witch'?Math.sin(t*1.8)*.24:0);
 p.body.rotation.y=Math.sin(q*.4)*.23;p.root.scale.setScalar(.94+Math.sin(t*.7+i)*.035);
 const left=p.arms[0],right=p.arms[1];
 left.rotation.z=.35+step*.8;right.rotation.z=-.35-other*.8;
