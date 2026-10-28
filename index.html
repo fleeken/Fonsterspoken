@@ -15,14 +15,14 @@
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x010207);scene.fog=new THREE.FogExp2(0x060b13,.037);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x101827);scene.fog=new THREE.FogExp2(0x060b13,.037);
 const camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
-let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.85;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
-scene.add(new THREE.HemisphereLight(0xb1c4de,0x283144,2.05));
-const light=new THREE.DirectionalLight(0xd7e5ff,2.6);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
-const rim=new THREE.PointLight(0x819be6,105,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xffa05b,55,30);warm.position.set(-7,-2,6);scene.add(warm);
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
+scene.add(new THREE.HemisphereLight(0xffffff,0x59647a,3.6));
+const light=new THREE.DirectionalLight(0xffffff,4.5);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
+const fill=new THREE.DirectionalLight(0xc4dcff,3.2);fill.position.set(5,1,10);scene.add(fill);const rim=new THREE.PointLight(0x819be6,105,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xffa05b,55,30);warm.position.set(-7,-2,6);scene.add(warm);
 const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
-const white=mat(0xaebdcb),dark=mat(0x070b12),orange=mat(0xb65a19),bone=mat(0xc6c5b4),purple=mat(0x242332),wax=mat(0xc5bca7),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
+const white=mat(0xe1e8f2),dark=mat(0x070b12),orange=mat(0xf58c2e),bone=mat(0xf1edda),purple=mat(0x242332),wax=mat(0xf1e3c6),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
 const sphere=new THREE.SphereGeometry(1,32,24),cylinder=new THREE.CylinderGeometry(1,1,1,20);
 function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
