@@ -19,7 +19,7 @@ const models=[
 const $=id=>document.getElementById(id);
 for(const m of models){
  const box=document.createElement('section');box.className='model';box.id=m.id;box.setAttribute('aria-label',m.name);
- box.innerHTML=`<model-viewer alt="${m.name} i 3D" camera-controls interaction-prompt="none" loading="eager" reveal="auto" exposure="1.4" shadow-intensity="0" environment-image="neutral" camera-orbit="0deg 90deg 135%" touch-action="pan-y"></model-viewer><span class="tag">${m.name}</span><div class="status" role="status">Laddar ${m.name.toLowerCase()}…</div>`;
+ box.innerHTML=`<model-viewer alt="${m.name} i 3D" camera-controls interaction-prompt="none" loading="eager" reveal="auto" exposure="1.4" shadow-intensity="0" environment-image="neutral" camera-orbit="${m.id==='witch_apprentice'?'65deg 85deg 135%':'0deg 90deg 135%'}" max-camera-orbit="auto auto 300%" touch-action="pan-y"></model-viewer><span class="tag">${m.name}</span><div class="status" role="status">Laddar ${m.name.toLowerCase()}…</div>`;
  $('stage').append(box);const viewer=box.querySelector('model-viewer'),status=box.querySelector('.status');
  viewer.addEventListener('load',()=>{status.hidden=true;box.dataset.loaded='true';if(m.id==='skeleton')fitSkeletonCamera();syncPlayback()});
  viewer.addEventListener('error',()=>showError(box,m));
@@ -88,7 +88,7 @@ $('scene').addEventListener('change',choose);choose();requestAnimationFrame(fram
 let controlsTimer;function revealControls(){$('stage').classList.add('show-controls');clearTimeout(controlsTimer);controlsTimer=setTimeout(()=>$('stage').classList.remove('show-controls'),3000)}
 $('stage').addEventListener('pointermove',revealControls);$('stage').addEventListener('pointerdown',revealControls);document.addEventListener('fullscreenchange',revealControls);
 $('brightness').addEventListener('input',()=>{$('level').textContent=$('brightness').value+' %';document.querySelectorAll('model-viewer').forEach(v=>v.setAttribute('exposure',Number($('brightness').value)/100))});
-$('reset').onclick=()=>document.querySelectorAll('model-viewer').forEach(v=>{if(v.closest('.model').id==='skeleton'){fitSkeletonCamera();return;}v.setAttribute('camera-orbit','0deg 90deg 135%');v.setAttribute('camera-target','auto auto auto');if(v.jumpCameraToGoal)v.jumpCameraToGoal()});
+$('reset').onclick=()=>document.querySelectorAll('model-viewer').forEach(v=>{if(v.closest('.model').id==='skeleton'){fitSkeletonCamera();return;}v.setAttribute('camera-orbit',v.closest('.model').id==='witch_apprentice'?'65deg 85deg 135%':'0deg 90deg 135%');v.setAttribute('camera-target','auto auto auto');if(v.jumpCameraToGoal)v.jumpCameraToGoal()});
 async function exit(){if(document.fullscreenElement)await document.exitFullscreen();$('stage').classList.remove('expanded')}
 $('fullscreen').onclick=async()=>{revealControls();try{if($('stage').requestFullscreen)await $('stage').requestFullscreen();else $('stage').classList.add('expanded')}catch(e){$('stage').classList.add('expanded')}};
 $('exit').onclick=exit;document.addEventListener('keydown',e=>{if(e.key==='Escape')exit()});
