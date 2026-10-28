@@ -17,14 +17,14 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.m
 const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x030108);
 const camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
-let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
 scene.add(new THREE.HemisphereLight(0xc6aaff,0x34203b,2.1));
-const light=new THREE.DirectionalLight(0xffffff,3.1);light.position.set(-5,8,12);scene.add(light);
+const light=new THREE.DirectionalLight(0xffffff,3.1);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
 const rim=new THREE.PointLight(0xa54dff,95,40);rim.position.set(5,2,-5);scene.add(rim);
 const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
 const white=mat(0xf4e9ff),dark=mat(0x211126),orange=mat(0xff8b17),bone=mat(0xf1e9db),purple=mat(0x8a4bd0),wax=mat(0xffedc8),green=mat(0x3c9c4c),gold=mat(0xffd368),pink=mat(0xffa2c7);
-const sphere=new THREE.SphereGeometry(1,20,14),cylinder=new THREE.CylinderGeometry(1,1,1,12);
-function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o}
+const sphere=new THREE.SphereGeometry(1,32,24),cylinder=new THREE.CylinderGeometry(1,1,1,20);
+function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
 function pivot(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g}
 function limb(parent,m,x,y,z,len,r){const g=pivot(parent,x,y,z);tube(g,m,0,-len/2,0,r,len,r);blob(g,m,0,-len,0,r*1.15,r*1.15,r*1.15);return g}
@@ -32,6 +32,9 @@ function makeFigure(type,i){
 const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);
 const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle';
 const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:white;
+const detail=(color,rough=.55,metal=0)=>new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
+const ivory=detail(0xfff9e9,.38),deepOrange=detail(0xd85a0a,.75),rib=detail(0xdcd4bd,.55),violet=detail(0x41255f,.82),shine=detail(0xffffff,.16),bronze=detail(0xb67d3e,.3,.55);
+const torus=(parent,m,x,y,z,major,minor,rotation=0)=>{const mesh=new THREE.Mesh(new THREE.TorusGeometry(major,minor,10,40),m);mesh.position.set(x,y,z);mesh.rotation.z=rotation;parent.add(mesh);return mesh};
 const arms=[limb(body,bodyMat,-.63,.52,0,.88,.15),limb(body,bodyMat,.63,.52,0,.88,.15)];
 const forearms=arms.map(a=>limb(a,bodyMat,0,-.86,0,.72,.125));
 const legs=[limb(body,bodyMat,-.33,-.6,0,.91,.19),limb(body,bodyMat,.33,-.6,0,.91,.19)];
@@ -39,22 +42,22 @@ const shins=legs.map(l=>limb(l,bodyMat,0,-.89,0,.78,.16));
 legs.forEach((l,j)=>blob(shins[j],skeleton?bone:dark,0,-.8,.17,.29,.13,.42));
 if(ghost){
  blob(body,white,0,.16,0,.83,1.05,.58);
- for(let j=-2;j<=2;j++)blob(body,white,j*.32,-.75,.02,.22,.39,.44);
+ for(let j=-2;j<=2;j++)blob(body,white,j*.32,-.75,.02,.22,.39,.44);blob(body,shine,-.22,.55,.49,.18,.38,.08);for(let j=-2;j<=2;j++)blob(body,ivory,j*.27,-.85,.12,.15,.3,.35);
  blob(body,white,0,1.06,0,.72,.74,.59);
 }else if(pumpkin){
  blob(body,purple,0,.02,0,.68,.85,.5);
- for(let j=-2;j<=2;j++)blob(body,orange,j*.21,1.12,0,.34,.69,.56);
+ for(let j=-2;j<=2;j++){blob(body,j%2?deepOrange:orange,j*.19,1.12,0,.32,.69,.57);blob(body,orange,j*.19,1.15,.12,.27,.64,.5)}torus(body,bronze,0,-.5,.48,.37,.045);
  tube(body,green,0,1.84,0,.13,.28,.13);
  blob(body,green,.26,1.76,0,.34,.1,.22);
 }else if(skeleton){
- blob(body,bone,0,.05,0,.48,.82,.35);
+ blob(body,bone,0,.05,0,.35,.72,.3);for(let j=0;j<5;j++){const yy=.48-j*.23;for(const side of [-1,1]){const boneRib=blob(body,rib,side*.28,yy,.27,.32,.065,.095);boneRib.rotation.z=side*.25}}blob(body,ivory,0,-.62,0,.49,.2,.32);
  for(let j=0;j<5;j++)tube(body,bone,0,.54-j*.23,.35,.65,.045,.12);
- blob(body,bone,0,1.26,0,.66,.73,.5);
+ blob(body,bone,0,1.26,0,.66,.73,.5);blob(body,ivory,0,1.49,.13,.53,.43,.44);for(const side of [-1,1])blob(body,bone,side*.49,1.01,.02,.19,.32,.37);
  blob(body,bone,0,.79,.07,.45,.26,.44);
 }else{
- blob(body,wax,0,.17,0,.69,.96,.53);
+ blob(body,wax,0,.17,0,.69,.96,.53);for(let j=0;j<5;j++){const x=-.47+j*.23;blob(body,ivory,x,.67+(j%2)*.06,.22,.12,.19,.19)}torus(body,bronze,0,-.61,.02,.57,.09);
  blob(body,wax,0,1.17,0,.67,.56,.51);
- blob(body,gold,0,1.87,0,.25,.52,.19);
+ tube(body,dark,0,1.72,0,.045,.28,.045);blob(body,gold,0,1.87,0,.25,.52,.19);
  const flame=new THREE.MeshStandardMaterial({color:0xffc23c,emissive:0xff8b00,emissiveIntensity:2,roughness:.2});
  blob(body,flame,0,1.94,.02,.21,.43,.18);
 }
@@ -65,7 +68,7 @@ for(const side of [-1,1]){
  if(!skeleton)blob(body,pink,side*.38,faceY-.17,faceZ*.97,.13,.07,.045);
 }
 blob(body,dark,0,faceY-.2,faceZ+.025,.13,.12,.055);
-if(skeleton){for(let j=-2;j<=2;j++)tube(body,white,j*.075,faceY-.32,faceZ+.07,.018,.11,.025)}
+if(skeleton){for(let j=-2;j<=2;j++)tube(body,white,j*.075,faceY-.32,faceZ+.07,.018,.11,.025)}else if(pumpkin){for(let j=-1;j<=1;j++)blob(body,gold,j*.12,faceY-.28,faceZ+.09,.045,.055,.025)}
 return {root,body,arms,forearms,legs,shins,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday'][i],i};
 }
 const types=['ghost','pumpkin','skeleton','candle'],names=['👻 Spöke','🎃 Pumpa','💀 Skelett','🕯️ Ljus'];
@@ -88,15 +91,15 @@ p.root.position.set(x,y,-.5+Math.sin(t*.8+i)*1.2);
 const move=p.move==='auto'?Object.keys(moves).filter(k=>k!=='auto')[(Math.floor(t/7)+i*3)%13]:p.move;
 const q=t*(move==='robot'?3.1:6.4)+p.seed,step=Math.sin(q),other=Math.sin(q+Math.PI);
 const spin=move==='spin'?t*4:move==='robot'?Math.floor(t*2)*Math.PI/2:Math.sin(t*.85+i)*.9+t*(i%2?-.48:.52);
-p.root.rotation.y=spin;
+p.root.rotation.y=spin;p.root.rotation.z=Math.sin(t*.53+i)*.12;p.root.rotation.x=Math.sin(t*.37+i*1.7)*.14;
 p.body.rotation.z=Math.sin(q*.5)*.15;
 p.body.rotation.x=Math.sin(q*.45)*.12;
 p.body.position.y=Math.abs(step)*.16;
-p.body.rotation.y=Math.sin(q*.4)*.16;
+p.body.rotation.y=Math.sin(q*.4)*.23;p.root.scale.setScalar(.95+Math.sin(t*.7+i)*.065);
 const left=p.arms[0],right=p.arms[1];
 left.rotation.z=.35+step*.8;right.rotation.z=-.35-other*.8;
 left.rotation.x=Math.sin(q+.5)*.65;right.rotation.x=Math.sin(q+2)*.65;
-p.forearms[0].rotation.z=-.6-step*.65;p.forearms[1].rotation.z=.6+other*.65;
+p.forearms[0].rotation.z=-.6-step*.65;p.forearms[1].rotation.z=.6+other*.65;p.forearms[0].rotation.x=Math.cos(q*.75)*.35;p.forearms[1].rotation.x=Math.sin(q*.75)*.35;
 p.legs[0].rotation.x=step*.65;p.legs[1].rotation.x=other*.65;
 p.shins[0].rotation.x=Math.max(0,-step)*.9;p.shins[1].rotation.x=Math.max(0,-other)*.9;
 if(move==='gangnam'){left.rotation.z=1.1;right.rotation.z=-1.1;left.rotation.x=step*.5;right.rotation.x=step*.5;p.body.position.y=Math.abs(step)*.35}
