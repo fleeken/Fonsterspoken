@@ -6,168 +6,119 @@
 </style></head>
 <body><header><h1>👻 FönsterSpöken <span class="tag">DANSSTUDIO</span></h1><p>Halloweenfigurer med egna koreografier • Gratis • För projektor och fönster</p></header>
 <div class="app"><aside>
-<h2>🕺 Dansstudio</h2><p class="hint">Välj rörelser för varje figur och se dem dansa.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
+<h2>🕺 Dansstudio</h2><p class="hint">Riktiga 3D-figurer med roterande kroppar, djup och ledade armar och ben.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
 <label class="line"><input id="mirror" type="checkbox"> Spegelvänd för fönster</label>
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
 <div class="toolbar"><button id="play" class="primary">▶ Starta dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
-<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fyra dansare rör sig både vågrätt och lodrätt över hela skärmen, försvinner helt och kommer tillbaka från motsatt kant.</p></main></div>
-<script>
-(()=>{'use strict';
-const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),speed=$('speed'),status=$('status');
-let playing=false,phase=0,last=0,people=[],beatPulse=0;
-const danceMoves=['bounce','shuffle','floss','robot','wave','thriller','gangnam','macarena','wednesday','ymca','chicken','jerusalema'];
-function chosen(){return [...document.querySelectorAll('.checks input:checked')].map(x=>x.value)}
-const danceNames={auto:'Auto – byt dansrörelse',shuffle:'Shuffle',floss:'Floss',bounce:'Bounce',robot:'Robot',wave:'Wave',macarena:'Macarena',gangnam:'Gangnam Style',wednesday:'Wednesday',ymca:'YMCA',chicken:'Fågeldansen',jerusalema:'Jerusalema',thriller:'Thriller'};
-const typeNames={ghost:'👻 Spöke',pumpkin:'🎃 Pumpa',skeleton:'💀 Skelett',candle:'🕯️ Ljus'};
-function updateDancerControls(){
- const holder=$('dancerControls');holder.replaceChildren();
- people.forEach((p,i)=>{
- const row=document.createElement('label');row.style.cssText='display:grid;gap:4px;background:#2b1d3a;border-radius:10px;padding:9px';
- const title=document.createElement('span');title.textContent=(i+1)+'. '+typeNames[p.type]+' – egen dans';
- const sel=document.createElement('select');sel.setAttribute('aria-label','Dans för '+typeNames[p.type]+' '+(i+1));
- Object.entries(danceNames).forEach(([key,name])=>{const opt=document.createElement('option');opt.value=key;opt.textContent=name;sel.append(opt)});
- sel.value=p.move;sel.onchange=()=>{p.move=sel.value};row.append(title,sel);holder.append(row);
- });
-}
-function reset(){
-const types=['ghost','pumpkin','skeleton','candle'],defaults=['thriller','gangnam','shuffle','wednesday'];
-const prev=people;people=types.map((type,i)=>({type,seed:prev[i]?.seed??(i*.71+.23),size:1,order:i,move:prev[i]?.move||defaults[i]}));
-updateDancerControls();
-}
-function resize(){const r=screen.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d))}
-function character(p,x,y,scale,t,mode){
-const q=t*Math.PI*2,si=Math.sin,co=Math.cos,cycle=(t%4+4)%4,phase=Math.floor(cycle),ease=v=>v*v*(3-2*v),blend=ease(cycle-phase),sway=si(q*.5+p.seed),bounce=Math.abs(si(q)),step=si(q),opp=si(q+Math.PI);
-let handL=[-52,8],handR=[52,8],footL=[-19,112],footR=[19,112],turn=sway*.09,hip=si(q)*8,bodyBounce=bounce*8;
-const poses={
-macarena:[ [[-55,-12],[55,-12]], [[-40,-42],[40,-42]], [[-15,-52],[15,-52]], [[-60,35],[60,35]] ],
-ymca:[ [[-55,-57],[55,-57]], [[-52,-50],[10,-7]], [[-44,-56],[44,-56]], [[-55,-55],[55,15]] ],
-thriller:[ [[-60,-20],[54,-34]], [[-50,-35],[65,-18]], [[-65,-12],[55,-45]], [[-45,-40],[60,-12]] ],
-wednesday:[ [[-64,-42],[55,0]], [[-45,18],[64,-40]], [[-58,-15],[58,-48]], [[-55,-48],[40,20]] ],
-chicken:[ [[-45,12],[45,12]], [[-60,-8],[60,-8]], [[-42,23],[42,23]], [[-58,-10],[58,-10]] ]
-};
-if(poses[mode]){const list=poses[mode],u=list[phase],v=list[(phase+1)%4];handL=[u[0][0]+(v[0][0]-u[0][0])*blend,u[0][1]+(v[0][1]-u[0][1])*blend];handR=[u[1][0]+(v[1][0]-u[1][0])*blend,u[1][1]+(v[1][1]-u[1][1])*blend];}
-switch(mode){
-case 'gangnam':handL=[-33+si(q*2)*8,-4+co(q*2)*9];handR=[32+si(q*2)*8,-12+co(q*2)*8];footL=[-18+step*32,112-Math.max(0,step)*28];footR=[18+opp*32,112-Math.max(0,opp)*28];bodyBounce=15*bounce;break;
-case 'shuffle':footL=[-20+si(q*1.8)*36,112-Math.max(0,co(q*1.8))*28];footR=[20+co(q*1.8)*36,112-Math.max(0,si(q*1.8))*28];handL=[-45+step*16,10];handR=[45-step*16,4];break;
-case 'floss':handL=[-53+si(q*1.5)*62,22];handR=[44+si(q*1.5)*62,30];hip=si(q*1.5)*18;footL=[-19-step*12,112];footR=[19-step*12,112];break;
-case 'robot':handL=[-50,phase%2?-48:18];handR=[50,phase%2?18:-48];footL=[-18+(phase%2?18:-12),112];footR=[18+(phase%2?-12:18),112];turn=phase%2?.14:-.14;break;
-case 'wave':handL=[-55,-15+si(q)*34];handR=[55,-15+si(q-1.4)*34];footL=[-18+step*12,112];footR=[18-step*12,112];turn=si(q)*.15;break;
-case 'jerusalema':handL=[-48+step*13,-5];handR=[47+step*13,7];footL=[-18+step*28,112-Math.max(0,step)*20];footR=[18+co(q)*28,112-Math.max(0,co(q))*20];turn=si(q*.5)*.18;break;
-case 'bounce':handL=[-47+step*15,-10];handR=[47-step*15,-10];footL=[-20+step*12,112];footR=[20-step*12,112];bodyBounce=18*bounce;break;
-}
-if(['thriller','wednesday','macarena','ymca','chicken'].includes(mode)){footL=[-20+si(q*.65)*20,112-Math.max(0,si(q*.65))*17];footR=[20+co(q*.65)*20,112-Math.max(0,co(q*.65))*17];turn+=si(q*.5)*.12}
-const skin=p.type==='skeleton'?'#eee8ff':p.type==='pumpkin'?'#8e5bc2':p.type==='candle'?'#fff0d3':'#e8e3ff';
-ctx.save();ctx.translate(x,y-bodyBounce*scale);ctx.scale(scale,scale);ctx.rotate(turn);
-ctx.translate(hip*.32,0);
-const joint=(x,y,r,color)=>{ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()};
-function twoBone(ax,ay,tx,ty,L1,L2,bend,color,width){
-const dx=tx-ax,dy=ty-ay,dist=Math.min(Math.hypot(dx,dy),L1+L2-.01),ang=Math.atan2(dy,dx);
-const ca=Math.max(-1,Math.min(1,(L1*L1+dist*dist-L2*L2)/(2*L1*dist||1)));
-const a=ang+bend*Math.acos(ca),ex=ax+Math.cos(a)*L1,ey=ay+Math.sin(a)*L1;
-ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=color;ctx.lineWidth=width;
-ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ex,ey);ctx.lineTo(tx,ty);ctx.stroke();joint(ex,ey,width*.53,color);joint(tx,ty,width*.55,color);
-}
-const ellipse=(x,y,rx,ry,color)=>{ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill()};
-const gradient=(top,bottom,y1=-75,y2=75)=>{const g=ctx.createLinearGradient(-40,y1,42,y2);g.addColorStop(0,top);g.addColorStop(.48,bottom);g.addColorStop(1,top);return g};
-ctx.shadowColor=p.type==='candle'?'#ff9b31':'#9b72f7';ctx.shadowBlur=15;
-if(p.type!=='ghost'){
- const legColor=p.type==='skeleton'?'#e9e7f2':p.type==='pumpkin'?'#7450a3':'#f9e4c3';
- twoBone(-12,54,footL[0],footL[1],34,34,-1,legColor,p.type==='skeleton'?9:13);
- twoBone(12,54,footR[0],footR[1],34,34,1,legColor,p.type==='skeleton'?9:13);
- ellipse(footL[0]-3,footL[1]+2,14,7,p.type==='skeleton'?'#faf8ff':'#382046');
- ellipse(footR[0]+3,footR[1]+2,14,7,p.type==='skeleton'?'#faf8ff':'#382046');
- ctx.fillStyle=p.type==='skeleton'?gradient('#fff','#c9c5db'):p.type==='pumpkin'?gradient('#9556c7','#4e287c'):gradient('#fff9e9','#e4c69c');
- ctx.beginPath();ctx.roundRect(-25,-3,50,66,15);ctx.fill();
- if(p.type==='skeleton'){
- ctx.strokeStyle='#493b5a';ctx.lineWidth=3;for(let k=0;k<4;k++){ctx.beginPath();ctx.ellipse(0,15+k*9,19,5,0,0,Math.PI);ctx.stroke()}
- ctx.fillStyle='#f5efff';ctx.fillRect(-4,5,8,47);
- }else if(p.type==='pumpkin'){
- ctx.strokeStyle='#b88fe5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,2);ctx.lineTo(0,58);ctx.stroke();
- ctx.fillStyle='#e6b854';ctx.beginPath();ctx.arc(0,12,5,0,7);ctx.fill();
- }else{
- ctx.fillStyle='#b46e4c';ctx.fillRect(-24,49,48,8);
- }
- const armColor=p.type==='skeleton'?'#f5f2ff':p.type==='pumpkin'?'#a779d1':'#fff0d3';
- twoBone(-23,7,handL[0],handL[1],35,35,-1,armColor,p.type==='skeleton'?9:13);
- twoBone(23,7,handR[0],handR[1],35,35,1,armColor,p.type==='skeleton'?9:13);
- ellipse(handL[0],handL[1],8,9,armColor);ellipse(handR[0],handR[1],8,9,armColor);
-}
-if(p.type==='ghost'){
-ctx.fillStyle=gradient('#ffffff','#d9c8f9',-55,80);ctx.beginPath();ctx.moveTo(-35,56);ctx.lineTo(-37,-18);ctx.arc(0,-18,37,Math.PI,0);ctx.lineTo(37,56);
-for(let i=0;i<5;i++){const z=37-i*15;ctx.quadraticCurveTo(z-8,39+si(q+i*.9)*13,z-15,56+si(q+i)*6)}ctx.closePath();ctx.fill();
-ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.ellipse(-16,-32,10,24,-.35,0,7);ctx.fill();
-twoBone(-30,7,handL[0],handL[1],33,32,-1,'#e9dfff',14);twoBone(30,7,handR[0],handR[1],33,32,1,'#e9dfff',14);
-ellipse(-13,-20,7,10,'#21102e');ellipse(13,-20,7,10,'#21102e');
-ellipse(-15,-23,2.5,3,'#ffffff');ellipse(11,-23,2.5,3,'#ffffff');
-ellipse(0,6,7,10,'#341441');ellipse(-23,0,7,4,'#ffb0dc');ellipse(23,0,7,4,'#ffb0dc');
-}else if(p.type==='pumpkin'){
-ctx.fillStyle=gradient('#ffc34a','#c75b0b',-68,4);ctx.beginPath();ctx.ellipse(0,-32,42,37,0,0,7);ctx.fill();
-ctx.strokeStyle='#b35a0d';ctx.lineWidth=2.5;for(const z of [-22,-10,10,22]){ctx.beginPath();ctx.ellipse(z,-32,15,35,0,-1.35,1.35);ctx.stroke()}
-ctx.fillStyle='#4d9c42';ctx.beginPath();ctx.roundRect(-6,-74,12,13,3);ctx.fill();
-ctx.beginPath();ctx.ellipse(12,-67,15,6,-.4,0,7);ctx.fill();
-ctx.shadowBlur=0;ctx.fillStyle='#231020';
-for(const z of [-16,16]){ctx.beginPath();ctx.moveTo(z,-49);ctx.lineTo(z-10,-24);ctx.lineTo(z+10,-24);ctx.closePath();ctx.fill()}
-ctx.fillStyle='#ffd76b';ellipse(-16,-30,3,3,'#ffd76b');ellipse(16,-30,3,3,'#ffd76b');
-ctx.fillStyle='#25101b';ctx.beginPath();ctx.moveTo(-22,-15);ctx.quadraticCurveTo(0,10,22,-15);ctx.lineTo(15,-12);ctx.lineTo(10,-6);ctx.lineTo(4,-10);ctx.lineTo(-3,-5);ctx.lineTo(-10,-12);ctx.closePath();ctx.fill();
-}else if(p.type==='skeleton'){
-ctx.fillStyle=gradient('#ffffff','#cbc6df',-70,5);ctx.beginPath();ctx.ellipse(0,-34,33,36,0,0,7);ctx.fill();
-ctx.fillStyle='#21152f';ellipse(-13,-40,10,12,'#21152f');ellipse(13,-40,10,12,'#21152f');
-ellipse(-15,-43,3,3,'#8d61d5');ellipse(11,-43,3,3,'#8d61d5');
-ctx.beginPath();ctx.moveTo(0,-28);ctx.lineTo(-6,-16);ctx.lineTo(6,-16);ctx.closePath();ctx.fill();
-ctx.fillStyle='#21152f';ctx.beginPath();ctx.roundRect(-18,-10,36,12,3);ctx.fill();
-ctx.strokeStyle='#f8f4ff';ctx.lineWidth=2;for(let z=-12;z<=12;z+=8){ctx.beginPath();ctx.moveTo(z,-9);ctx.lineTo(z,1);ctx.stroke()}
+<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fyra 3D-figurer snurrar, dansar över hela skärmen och kommer tillbaka från motsatt kant.</p></main></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x030108);
+const camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
+scene.add(new THREE.HemisphereLight(0xc6aaff,0x34203b,2.1));
+const light=new THREE.DirectionalLight(0xffffff,3.1);light.position.set(-5,8,12);scene.add(light);
+const rim=new THREE.PointLight(0xa54dff,95,40);rim.position.set(5,2,-5);scene.add(rim);
+const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
+const white=mat(0xf4e9ff),dark=mat(0x211126),orange=mat(0xff8b17),bone=mat(0xf1e9db),purple=mat(0x8a4bd0),wax=mat(0xffedc8),green=mat(0x3c9c4c),gold=mat(0xffd368),pink=mat(0xffa2c7);
+const sphere=new THREE.SphereGeometry(1,20,14),cylinder=new THREE.CylinderGeometry(1,1,1,12);
+function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);parent.add(o);return o}
+function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
+function pivot(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g}
+function limb(parent,m,x,y,z,len,r){const g=pivot(parent,x,y,z);tube(g,m,0,-len/2,0,r,len,r);blob(g,m,0,-len,0,r*1.15,r*1.15,r*1.15);return g}
+function makeFigure(type,i){
+const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);
+const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle';
+const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:white;
+const arms=[limb(body,bodyMat,-.63,.52,0,.88,.15),limb(body,bodyMat,.63,.52,0,.88,.15)];
+const forearms=arms.map(a=>limb(a,bodyMat,0,-.86,0,.72,.125));
+const legs=[limb(body,bodyMat,-.33,-.6,0,.91,.19),limb(body,bodyMat,.33,-.6,0,.91,.19)];
+const shins=legs.map(l=>limb(l,bodyMat,0,-.89,0,.78,.16));
+legs.forEach((l,j)=>blob(shins[j],skeleton?bone:dark,0,-.8,.17,.29,.13,.42));
+if(ghost){
+ blob(body,white,0,.16,0,.83,1.05,.58);
+ for(let j=-2;j<=2;j++)blob(body,white,j*.32,-.75,.02,.22,.39,.44);
+ blob(body,white,0,1.06,0,.72,.74,.59);
+}else if(pumpkin){
+ blob(body,purple,0,.02,0,.68,.85,.5);
+ for(let j=-2;j<=2;j++)blob(body,orange,j*.21,1.12,0,.34,.69,.56);
+ tube(body,green,0,1.84,0,.13,.28,.13);
+ blob(body,green,.26,1.76,0,.34,.1,.22);
+}else if(skeleton){
+ blob(body,bone,0,.05,0,.48,.82,.35);
+ for(let j=0;j<5;j++)tube(body,bone,0,.54-j*.23,.35,.65,.045,.12);
+ blob(body,bone,0,1.26,0,.66,.73,.5);
+ blob(body,bone,0,.79,.07,.45,.26,.44);
 }else{
-ctx.fillStyle=gradient('#fff9e8','#f0cfa2',-35,65);ctx.beginPath();ctx.roundRect(-27,-40,54,103,9);ctx.fill();
-ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.58)';ctx.beginPath();ctx.roundRect(-19,-33,9,76,5);ctx.fill();
-ctx.fillStyle='#8d5068';ctx.beginPath();ctx.roundRect(-27,54,54,10,3);ctx.fill();
-ctx.shadowColor='#ffac19';ctx.shadowBlur=28;ellipse(si(q)*5,-63,15+si(q*2)*2,27,'#ffae25');
-ellipse(si(q)*4,-60,8,17,'#fff3a0');ctx.shadowBlur=0;
-ellipse(-12,-15,5,7,'#301629');ellipse(12,-15,5,7,'#301629');
-ellipse(-13,-17,2,2,'#fff');ellipse(11,-17,2,2,'#fff');
-ctx.strokeStyle='#5a2841';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,9,.15,Math.PI-.15);ctx.stroke();
-ellipse(-20,-2,6,4,'#f3a9a9');ellipse(20,-2,6,4,'#f3a9a9');
+ blob(body,wax,0,.17,0,.69,.96,.53);
+ blob(body,wax,0,1.17,0,.67,.56,.51);
+ blob(body,gold,0,1.87,0,.25,.52,.19);
+ const flame=new THREE.MeshStandardMaterial({color:0xffc23c,emissive:0xff8b00,emissiveIntensity:2,roughness:.2});
+ blob(body,flame,0,1.94,.02,.21,.43,.18);
 }
-ctx.restore();
+const faceY=pumpkin?1.19:skeleton?1.32:candle?1.19:1.12,faceZ=pumpkin?.57:skeleton?.49:candle?.53:.59;
+for(const side of [-1,1]){
+ blob(body,dark,side*.24,faceY+.09,faceZ,.115,.16,.07);
+ blob(body,white,side*.27,faceY+.14,faceZ+.07,.037,.05,.02);
+ if(!skeleton)blob(body,pink,side*.38,faceY-.17,faceZ*.97,.13,.07,.045);
 }
-function render(now){
-const dt=Math.min((now-last)/1000||0,.06);last=now;const w=canvas.width,h=canvas.height;
-ctx.fillStyle='#020104';ctx.fillRect(0,0,w,h);
-const energy=+speed.value/100;if(playing)phase+=dt*1.85*energy;
-beatPulse=playing?(1-Math.abs((phase%1)*2-1)):.15;
-const glow=ctx.createRadialGradient(w*.5,h*.55,10,w*.5,h*.5,w*.9);
-glow.addColorStop(0,'rgba(98,29,123,'+(.16+beatPulse*.12)+')');glow.addColorStop(1,'rgba(0,0,0,0)');
-ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
-const moveIndex=Math.floor(phase/8)%danceMoves.length;
-const scale=Math.min(w/420,h/300,2.25),margin=115*scale;
-const spanX=w+margin*2,spanY=h+margin*2;
-const wrap=(v,span)=>((v%span)+span)%span;
-people.forEach((p,i)=>{
-// Fyra oberoende banor, över hela scenen. Alla går HELT utanför duken och kommer tillbaka från motsatt kant.
-const t=phase*.55;
-const offset=[0,.27,.52,.78][i];
-const horizontal= i===0||i===2;
-const direction=i===0||i===3?1:-1;
-let px,py;
-if(horizontal){
- const progress=wrap(t*(i===0?.105:.083)+offset,1);
- px=direction>0?-margin+progress*spanX:w+margin-progress*spanX;
- py=h*(i===0?.24:.74)+Math.sin(t*.9+i*2.2)*h*.19;
-}else{
- const progress=wrap(t*(i===1?.09:.073)+offset,1);
- py=direction>0?-margin+progress*spanY:h+margin-progress*spanY;
- px=w*(i===1?.27:.74)+Math.sin(t*.75+i*1.9)*w*.22;
+blob(body,dark,0,faceY-.2,faceZ+.025,.13,.12,.055);
+if(skeleton){for(let j=-2;j<=2;j++)tube(body,white,j*.075,faceY-.32,faceZ+.07,.018,.11,.025)}
+return {root,body,arms,forearms,legs,shins,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday'][i],i};
 }
-// Sidosteg och stora kroppsrörelser medan figuren korsar bilden.
-px+=Math.sin(phase*.8+p.seed)*Math.min(w*.04,38*scale);
-py+=Math.cos(phase*.65+p.seed)*Math.min(h*.035,22*scale);
-const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
-character(p,px,py,scale*(.95+.07*Math.sin(phase*.38+p.seed)),phase+p.seed*.08,personalMove);
+const types=['ghost','pumpkin','skeleton','candle'],names=['👻 Spöke','🎃 Pumpa','💀 Skelett','🕯️ Ljus'];
+const moves={auto:'Auto – växla dans',shuffle:'Shuffle',floss:'Floss',bounce:'Bounce',robot:'Robot',wave:'Wave',macarena:'Macarena',gangnam:'Gangnam Style',wednesday:'Wednesday',ymca:'YMCA',chicken:'Fågeldansen',jerusalema:'Jerusalema',thriller:'Thriller',spin:'Snurrdans',moonwalk:'Moonwalk'};
+const dancers=types.map(makeFigure);
+const holder=$('dancerControls');
+dancers.forEach((p,i)=>{const label=document.createElement('label');label.style.cssText='display:grid;gap:5px;background:#2b1d3a;border-radius:10px;padding:9px';label.textContent=names[i]+' – egen dans';const select=document.createElement('select');Object.entries(moves).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.textContent=v;select.append(o)});select.value=p.move;select.onchange=()=>p.move=select.value;label.append(select);holder.append(label)});
+let playing=false,time=0,last=0,viewW=16,viewH=10;
+function resize(){const r=screen.getBoundingClientRect();viewH=10;viewW=viewH*r.width/Math.max(1,r.height);camera.left=-viewW/2;camera.right=viewW/2;camera.top=viewH/2;camera.bottom=-viewH/2;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false)}
+function wrap(n){return ((n%1)+1)%1}
+function animate(now){
+const dt=Math.min((now-last)/1000||0,.05);last=now;
+if(playing)time+=dt*(+speed.value/100);
+dancers.forEach((p,i)=>{
+const t=time,cycle=t*(.055+i*.008)+[0,.25,.5,.75][i],v=wrap(cycle),margin=2.5;
+const horizontal=i===0||i===2,forward=i===0||i===3;
+const x=horizontal?(forward?-viewW/2-margin+(viewW+2*margin)*v:viewW/2+margin-(viewW+2*margin)*v):Math.sin(t*.48+i*2.1)*viewW*.35;
+const y=horizontal?Math.sin(t*.61+i*2)*viewH*.29:(forward?-viewH/2-margin+(viewH+2*margin)*v:viewH/2+margin-(viewH+2*margin)*v);
+p.root.position.set(x,y,-.5+Math.sin(t*.8+i)*1.2);
+const move=p.move==='auto'?Object.keys(moves).filter(k=>k!=='auto')[(Math.floor(t/7)+i*3)%13]:p.move;
+const q=t*(move==='robot'?3.1:6.4)+p.seed,step=Math.sin(q),other=Math.sin(q+Math.PI);
+const spin=move==='spin'?t*4:move==='robot'?Math.floor(t*2)*Math.PI/2:Math.sin(t*.85+i)*.9+t*(i%2?-.48:.52);
+p.root.rotation.y=spin;
+p.body.rotation.z=Math.sin(q*.5)*.15;
+p.body.rotation.x=Math.sin(q*.45)*.12;
+p.body.position.y=Math.abs(step)*.16;
+p.body.rotation.y=Math.sin(q*.4)*.16;
+const left=p.arms[0],right=p.arms[1];
+left.rotation.z=.35+step*.8;right.rotation.z=-.35-other*.8;
+left.rotation.x=Math.sin(q+.5)*.65;right.rotation.x=Math.sin(q+2)*.65;
+p.forearms[0].rotation.z=-.6-step*.65;p.forearms[1].rotation.z=.6+other*.65;
+p.legs[0].rotation.x=step*.65;p.legs[1].rotation.x=other*.65;
+p.shins[0].rotation.x=Math.max(0,-step)*.9;p.shins[1].rotation.x=Math.max(0,-other)*.9;
+if(move==='gangnam'){left.rotation.z=1.1;right.rotation.z=-1.1;left.rotation.x=step*.5;right.rotation.x=step*.5;p.body.position.y=Math.abs(step)*.35}
+if(move==='ymca'){left.rotation.z=2.5+step*.2;right.rotation.z=-2.5+other*.2}
+if(move==='macarena'){left.rotation.x=1.2+step*.3;right.rotation.x=1.2+other*.3;left.rotation.z=.9;right.rotation.z=-.9}
+if(move==='wednesday'){left.rotation.z=1.8+step*.45;right.rotation.z=-.6+other*.8;p.body.rotation.z=step*.3}
+if(move==='thriller'){left.rotation.x=1.5;right.rotation.x=1.5;p.body.rotation.z=step*.28}
+if(move==='floss'){left.rotation.z=step*1.1;right.rotation.z=step*1.1;p.body.rotation.y=step*.5}
+if(move==='robot'){left.rotation.z=Math.round(step*2)*.5;right.rotation.z=Math.round(other*2)*.5}
+if(move==='wave'){left.rotation.z=1+step;right.rotation.z=-1+Math.sin(q-1.6)}
+if(move==='chicken'){left.rotation.z=.8+step*.5;right.rotation.z=-.8-other*.5}
+if(move==='jerusalema'){p.legs[0].rotation.x=step*.95;p.legs[1].rotation.x=other*.95}
+if(move==='moonwalk'){p.legs[0].rotation.x=step*.32;p.legs[1].rotation.x=other*.32;p.body.rotation.z= -.12}
+if(move==='spin'){left.rotation.z=1.6;right.rotation.z=-1.6;p.body.rotation.z=Math.sin(q)*.12}
 });
-ctx.fillStyle='rgba(221,148,255,.8)';for(let i=0;i<20;i++){const x=(i*83.7%100)/100*w,y=(i*43.3%100)/100*h;ctx.globalAlpha=.2+.25*Math.sin(phase*2+i)**2;ctx.fillRect(x,y,2,2)}
-ctx.globalAlpha=1;requestAnimationFrame(render)
+renderer.render(scene,camera);requestAnimationFrame(animate)
 }
-$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'🕺 Alla figurer dansar med egna moves!':'Dansen pausad'};
-$('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);speed.oninput=()=>$('sval').textContent=speed.value+'%';addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
-})();
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'Fyra 3D-figurer dansar och snurrar runt på hela scenen.':'Dansen pausad'};
+$('shuffle').onclick=()=>{dancers.forEach((p,i)=>{p.move=Object.keys(moves).filter(k=>k!=='auto')[(i*3+Math.floor(Math.random()*12))%13];holder.children[i].querySelector('select').value=p.move})};
+$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();
+$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);
+speed.oninput=()=>$('sval').textContent=speed.value+'%';
+addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);
+resize();requestAnimationFrame(animate);
 </script></body></html>
