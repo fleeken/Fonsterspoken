@@ -1,0 +1,11 @@
+Model Information:
+* title:	Candle
+* source:	https://sketchfab.com/3d-models/candle-9e070b8cc72d4332a3c91fa9a0f3546e
+* author:	D3mtt (https://sketchfab.com/D3mtt)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Candle" (https://sketchfab.com/3d-models/candle-9e070b8cc72d4332a3c91fa9a0f3546e) by D3mtt (https://sketchfab.com/D3mtt) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
