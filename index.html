@@ -4,53 +4,22 @@
 <style>
 :root{color-scheme:dark;--purple:#b17cff;--pink:#ff4fc4}*{box-sizing:border-box}body{margin:0;background:#090611;color:#f8f2ff;font:15px system-ui,sans-serif}header{padding:18px 24px;background:linear-gradient(90deg,#231239,#0e0a19);border-bottom:1px solid #46305d}h1{margin:0;font-size:clamp(23px,3vw,35px)}header p{margin:5px 0;color:#cbb7e5}.app{display:grid;grid-template-columns:310px minmax(0,1fr);min-height:calc(100vh - 95px)}aside{padding:20px;background:#171022;border-right:1px solid #3d2b50}h2{font-size:17px;margin:20px 0 10px;color:#ead8ff}h2:first-child{margin-top:0}select,button{font:inherit;color:white;border:1px solid #74538f;background:#302043;border-radius:11px;padding:12px}select{width:100%}button{cursor:pointer;transition:background .15s}button:hover{background:#52306f}button.primary{background:linear-gradient(90deg,#a148c8,#de448c);border:0;font-weight:700}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{background:#2b1d3a;border:1px solid #5d4077;border-radius:12px;padding:11px;cursor:pointer}.checks input{accent-color:#d86fff}label.line{display:block;margin:15px 0 6px}input[type=range]{width:100%;accent-color:#d46dff}.hint{font-size:12px;color:#b9a9c8;line-height:1.6}main{padding:16px;min-width:0}.screen{height:min(75vh,750px);min-height:350px;position:relative;background:#000;border:2px solid #533265;border-radius:16px;overflow:hidden}.screen canvas{display:block;width:100%;height:100%}.screen.mirrored canvas{transform:scaleX(-1)}.screen:fullscreen{height:100vh;width:100vw;border:0;border-radius:0}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}.toolbar button{flex:1;min-width:130px}.tag{display:inline-block;color:#f2b4e6;background:#402040;padding:5px 9px;border-radius:99px;font-size:12px}.status{font-size:13px;color:#bda9d2}.note{color:#a99abb;font-size:12px} @media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0}.screen{height:55vh;min-height:300px}}
 </style></head>
-<body><header><h1>👻 FönsterSpöken <span class="tag">DANCE PARTY</span></h1><p>Halloweenfigurer som dansar till musik • Gratis • För projektor och fönster</p></header>
+<body><header><h1>👻 FönsterSpöken <span class="tag">DANCE PARTY</span></h1><p>Halloweenfigurer med egna koreografier • Gratis • För projektor och fönster</p></header>
 <div class="app"><aside>
-<h2>🎵 Välj låt / beat</h2><select id="song"><option value="spooky">Spooky Bounce • 112 BPM</option><option value="monster">Monster Shuffle • 128 BPM</option><option value="pumpkin">Pumpkin Funk • 100 BPM</option><option value="rave">Midnight Rave • 145 BPM</option><option value="waltz">Ghostly Groove • 90 BPM</option></select>
-<h2>🟢 Spotify-webbspelare</h2>
-<p class="hint">Välj en låt i Spotify och kopiera låtens länk via Dela → Kopiera länk. Klistra in den här för att spela den i FönsterSpöken.</p>
-<input id="spotifyLink" type="text" placeholder="Klistra in Spotify-länk till en låt" style="width:100%;padding:11px;background:#302043;color:white;border:1px solid #74538f;border-radius:10px">
-<button id="spotifyLoad" type="button" style="width:100%;margin-top:8px">🟢 Visa Spotify-spelare</button>
-<div id="spotifyHolder" style="margin-top:10px;display:none"><iframe id="spotifyFrame" title="Spotify-spelare" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="width:100%;height:152px;border:0;border-radius:12px;background:#20132d"></iframe></div>
-<p class="hint">Starta låten i Spotify-spelaren och tryck sedan på <b>Starta dans utan appmusik</b>. Full uppspelning kan kräva Spotify-inloggning och Premium. Dansen är inte automatiskt synkad med Spotify.</p>
-<button id="danceOnly" type="button" style="width:100%">🕺 Starta dans utan appmusik</button>
-<h2>🎧 Spela en känd låt</h2><input id="musicfile" type="file" accept="audio/*" style="width:100%;max-width:100%"><audio id="uploadedAudio" controls style="width:100%;margin-top:10px"></audio><p class="hint">Välj en MP3 från datorn. Låten spelas lokalt och laddas inte upp till GitHub. Använd sedan dansstilen som hör till låten.</p><h2>🕺 Välj dansstil</h2><select id="dance"><option value="auto">Auto – passar låten</option><option value="shuffle">Shuffle</option><option value="floss">Floss-inspirerad</option><option value="bounce">Bounce</option><option value="robot">Robot</option><option value="wave">Wave</option><option value="macarena">Macarena – Los del Río</option><option value="gangnam">Gangnam Style – PSY</option><option value="wednesday">Wednesday-dansen – Bloody Mary</option><option value="ymca">YMCA – Village People</option><option value="chicken">Chicken Dance / Fågeldansen</option><option value="jerusalema">Jerusalema – Master KG</option><option value="thriller">Thriller – Michael Jackson (zombiedans)</option></select>
+<h2>🕺 Dansstudio</h2><p class="hint">Bara dans – ingen musik eller webbspelare.</p><h2>🕺 Välj dansstil</h2><select id="dance"><option value="auto">Auto – växla moves</option><option value="shuffle">Shuffle</option><option value="floss">Floss-inspirerad</option><option value="bounce">Bounce</option><option value="robot">Robot</option><option value="wave">Wave</option><option value="macarena">Macarena – Los del Río</option><option value="gangnam">Gangnam Style – PSY</option><option value="wednesday">Wednesday-dansen – Bloody Mary</option><option value="ymca">YMCA – Village People</option><option value="chicken">Chicken Dance / Fågeldansen</option><option value="jerusalema">Jerusalema – Master KG</option><option value="thriller">Thriller – Michael Jackson (zombiedans)</option></select>
 <h2>🎃 Välj figurer</h2><div class="checks"><label><input type="checkbox" value="ghost" checked> 👻 Spöken</label><label><input type="checkbox" value="pumpkin" checked> 🎃 Pumpor</label><label><input type="checkbox" value="skeleton" checked> 💀 Skelett</label><label><input type="checkbox" value="candle" checked> 🕯️ Ljus</label></div>
 <label class="line" for="number">Antal dansare: <output id="nval">6</output></label><input id="number" type="range" min="1" max="12" value="6">
-<h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika moves under låten.</p><label class="line" for="volume">Volym: <output id="vval">65%</output></label><input id="volume" type="range" min="0" max="100" value="65">
-<label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
+<h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika moves under låten.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
 <label class="line"><input id="mirror" type="checkbox"> Spegelvänd för fönster</label>
-<p class="hint">🔊 Höj datorns ljud, kontrollera att webbläsarfliken inte är tystad och tryck på Spela. Låtarna är syntetiserade instrumentala Halloween-melodier, inte inspelade poplåtar. Musiken skapas direkt i webbläsaren och hörs via datorns högtalare eller ansluten ljudutrustning. Klicka på Spela för att aktivera ljudet.</p>
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
-<div class="toolbar"><button id="play" class="primary">▶ Spela musik & dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
-<p class="status" id="status">Redo för Halloweenfesten. Välj låt och tryck Spela!</p><p class="note">Alla beats är originalmusik skapad i appen. Ljudet startar efter ett klick enligt webbläsarens regler. För bästa fönstereffekt: mörkt rum och ljus projektionsduk/tyg.</p>
-</main></div>
+<div class="toolbar"><button id="play" class="primary">▶ Starta dans</button><button id="shuffle">🔀 Blanda figurer</button><button id="full">⛶ Helskärm</button></div>
+<p class="status" id="status">Redo! Välj dans för varje figur och tryck Starta dans.</p><p class="note">Fokus på figurer och dans – helt utan musikspelare.</p></main></div>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),song=$('song'),dance=$('dance'),number=$('number'),volume=$('volume'),speed=$('speed'),status=$('status');
-const tracks={spooky:{bpm:112,bass:[110,110,146.83,98],lead:[440,523.25,587.33,392],mode:'bounce'},monster:{bpm:128,bass:[82.41,98,110,123.47],lead:[329.63,392,440,493.88],mode:'shuffle'},pumpkin:{bpm:100,bass:[73.42,73.42,98,110],lead:[293.66,349.23,440,349.23],mode:'floss'},rave:{bpm:145,bass:[65.41,82.41,98,73.42],lead:[523.25,659.25,783.99,587.33],mode:'robot'},waltz:{bpm:90,bass:[98,123.47,110,82.41],lead:[392,493.88,440,329.63],mode:'wave'}};
-let uploaded=null,uploadUrl=null,externalMode=false;let audio,master,noiseBuffer,playing=false,nextBeat=0,step=0,beatTime=0,beatPulse=0,phase=0,last=0,people=[],danceMoves=['bounce','shuffle','floss','robot','wave'],moveLabel='';
-$('musicfile').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;if(uploadUrl)URL.revokeObjectURL(uploadUrl);uploadUrl=URL.createObjectURL(file);uploaded=$('uploadedAudio');uploaded.src=uploadUrl;uploaded.volume=+volume.value/100;externalMode=true;playing=false;$('play').textContent='▶ Spela vald låt & dans';status.textContent='🎧 Vald låt: '+file.name+' – tryck Spela';if(audio&&master)master.gain.value=0;});
-$('uploadedAudio').addEventListener('ended',()=>{playing=false;$('play').textContent='▶ Spela vald låt & dans'});
-$('spotifyLoad').onclick=()=>{
- const raw=$('spotifyLink').value.trim();
- let value=raw.match(/src\s*=\s*["']([^"']+)["']/i)?.[1]||raw;
- value=value.replaceAll('&amp;','&');
- try{
- const u=new URL(value);let type,id;
- if(u.hostname==='open.spotify.com'||u.hostname==='embed.spotify.com'){
- const parts=u.pathname.split('/').filter(Boolean);
- if(parts[0]==='embed')parts.shift();
- if(parts[0]&&/^intl-[a-z]{2}$/i.test(parts[0]))parts.shift();
- [type,id]=parts;
- }else if(value.startsWith('spotify:')){const parts=value.split(':');type=parts[1];id=parts[2]}
- if(!['track','album','playlist','episode','show'].includes(type)||!/^[A-Za-z0-9]{10,40}$/.test(id))throw Error('Ogiltig Spotify-länk');
- $('spotifyFrame').src='https://open.spotify.com/embed/'+type+'/'+id+'?utm_source=generator';
- $('spotifyHolder').style.display='block';status.textContent='🟢 Spotify-spelaren är laddad. Tryck Play i spelaren.';
- }catch(e){status.textContent='⚠️ Klistra in en giltig Spotify-länk till en låt eller spellista.'}
-};
-$('danceOnly').onclick=()=>{if(uploaded&&!uploaded.paused)uploaded.pause();if(audio&&master)master.gain.value=0;externalMode=true;playing=!playing;$('danceOnly').textContent=playing?'⏸ Pausa dans':'🕺 Starta dans utan appmusik';status.textContent=playing?'🕺 Figurerna dansar – spela låten i Apple Music-spelaren':'Dansen pausad'};
+const $=id=>document.getElementById(id),canvas=$('canvas'),ctx=canvas.getContext('2d'),screen=$('screen'),dance=$('dance'),number=$('number'),speed=$('speed'),status=$('status');
+let playing=false,phase=0,last=0,people=[],beatPulse=0;
+const danceMoves=['bounce','shuffle','floss','robot','wave','thriller','gangnam','macarena','wednesday','ymca','chicken','jerusalema'];
 function chosen(){return [...document.querySelectorAll('.checks input:checked')].map(x=>x.value)}
 const danceNames={auto:'Auto – byt dans under låten',shuffle:'Shuffle',floss:'Floss',bounce:'Bounce',robot:'Robot',wave:'Wave',macarena:'Macarena',gangnam:'Gangnam Style',wednesday:'Wednesday',ymca:'YMCA',chicken:'Fågeldansen',jerusalema:'Jerusalema',thriller:'Thriller'};
 const typeNames={ghost:'👻 Spöke',pumpkin:'🎃 Pumpa',skeleton:'💀 Skelett',candle:'🕯️ Ljus'};
@@ -67,31 +36,6 @@ function updateDancerControls(){
 function reset(){let types=chosen();if(!types.length){types=['ghost'];document.querySelector('.checks input').checked=true}
 const prev=people;people=Array.from({length:+number.value},(_,i)=>({type:types[i%types.length],seed:prev[i]?.seed??Math.random()*7,size:.75+Math.random()*.35,order:i,move:prev[i]?.move||['thriller','gangnam','macarena','wednesday','shuffle','ymca','chicken','jerusalema','floss','robot','wave','bounce'][i%12]}));updateDancerControls();}
 function resize(){const r=screen.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d))}
-function sound(freq,dur,kind='sine',gain=.1,when=audio.currentTime){const o=audio.createOscillator(),v=audio.createGain();o.type=kind;o.frequency.setValueAtTime(freq,when);v.gain.setValueAtTime(.0001,when);v.gain.exponentialRampToValueAtTime(Math.max(.001,gain),when+.012);v.gain.exponentialRampToValueAtTime(.0001,when+dur);o.connect(v);v.connect(master);o.start(when);o.stop(when+dur+.02)}
-function drum(when,kind){
-const o=audio.createOscillator(),v=audio.createGain();o.type='sine';
-o.frequency.setValueAtTime(kind==='kick'?155:220,when);
-o.frequency.exponentialRampToValueAtTime(kind==='kick'?48:80,when+.12);
-v.gain.setValueAtTime(kind==='kick'?.36:.08,when);
-v.gain.exponentialRampToValueAtTime(.001,when+.16);
-o.connect(v);v.connect(master);o.start(when);o.stop(when+.17);
-if(kind==='snare'||kind==='hat'){
-const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),n=audio.createGain();
-src.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=kind==='hat'?6000:1200;
-n.gain.setValueAtTime(kind==='hat'?.045:.14,when);
-n.gain.exponentialRampToValueAtTime(.001,when+(kind==='hat'?.045:.13));
-src.connect(filter);filter.connect(n);n.connect(master);src.start(when);src.stop(when+.15);
-}}
-function initAudio(){if(audio)return;audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();master.gain.value=+volume.value/100*.95;master.connect(audio.destination);noiseBuffer=audio.createBuffer(1,Math.round(audio.sampleRate*.25),audio.sampleRate);const a=noiseBuffer.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1}
-function tickMusic(){if(!playing||!audio)return;const tr=tracks[song.value],interval=60/tr.bpm/2;while(nextBeat<audio.currentTime+.18){const b=step%8,bar=Math.floor(step/8),v=bar%4;
-if(b%2===0)drum(nextBeat,'kick');if(b===2||b===6)drum(nextBeat,'snare');drum(nextBeat,'hat');
-if(b%2===0){sound(tr.bass[(bar+Math.floor(b/2))%4]/2,.24,'sawtooth',.17,nextBeat);sound(tr.bass[(bar+Math.floor(b/2))%4],.13,'triangle',.075,nextBeat)}
-const patterns=[[0,2,1,3,2,1,0,2],[0,1,3,2,1,3,2,0],[2,1,0,1,3,2,1,0],[0,3,2,1,0,2,3,1]];
-const n=patterns[v][b];if(b!==6||bar%2===0){sound(tr.lead[n],interval*.83,bar%2?'square':'triangle',.095,nextBeat);if(b===0||b===4)sound(tr.lead[n]/2,interval*1.6,'sine',.08,nextBeat)}
-nextBeat+=interval;step++}beatTime=audio.currentTime}
-async function toggle(){if(externalMode&&uploaded&&uploaded.src){if(!uploaded.paused){uploaded.pause();playing=false;$('play').textContent='▶ Spela vald låt & dans';status.textContent='Pausad';return}try{await uploaded.play();playing=true;$('play').textContent='⏸ Pausa låt';status.textContent='🎵 Spelar '+$('musicfile').files[0].name+' • '+dance.options[dance.selectedIndex].text;return}catch(e){status.textContent='⚠️ Kunde inte spela ljudfilen: '+e.message;return}}initAudio();await audio.resume();if(audio.state!=='running'){status.textContent='⚠️ Webbläsaren blockerar ljudet. Klicka igen och kontrollera att fliken inte är tystad.';return}playing=!playing;if(playing){nextBeat=audio.currentTime+.06;step=0;$('play').textContent='⏸ Pausa musik';status.textContent='🎶 Nu dansar monstren till '+song.options[song.selectedIndex].text}else{$('play').textContent='▶ Spela musik & dans';status.textContent='Pausad';master.gain.setTargetAtTime(0,audio.currentTime,.025)}if(playing)master.gain.setTargetAtTime(+volume.value/100*.95,audio.currentTime,.03)}
-function limb(x1,y1,x2,y2,x3,y3,color,width){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.stroke()}
-function face(eyesY=0,scale=1){ctx.fillStyle='#160d22';for(const x of [-12,12]){ctx.beginPath();ctx.ellipse(x,eyesY,4*scale,6*scale,0,0,7);ctx.fill()}ctx.beginPath();ctx.ellipse(0,eyesY+15,5*scale,6*scale,0,0,7);ctx.fill()}
 function character(p,x,y,scale,t,mode){
 const q=t*Math.PI*2,si=Math.sin,co=Math.cos,cycle=(t%4+4)%4,phase=Math.floor(cycle),ease=v=>v*v*(3-2*v),blend=ease(cycle-phase),sway=si(q*.5+p.seed),bounce=Math.abs(si(q)),step=si(q),opp=si(q+Math.PI);
 let handL=[-52,8],handR=[52,8],footL=[-19,112],footR=[19,112],turn=sway*.09,hip=si(q)*8,bodyBounce=bounce*8;
@@ -155,19 +99,18 @@ ctx.shadowColor='#ff9c12';ctx.shadowBlur=25;ctx.fillStyle='#ffb926';ctx.beginPat
 ctx.restore();
 }
 function render(now){const dt=Math.min((now-last)/1000||0,.06);last=now;const w=canvas.width,h=canvas.height;ctx.fillStyle='#020104';ctx.fillRect(0,0,w,h);
-const tr=tracks[song.value],bpm=tr.bpm,energy=+speed.value/100;if(playing){phase+=dt*bpm/60*energy;if(!externalMode)tickMusic()}beatPulse=playing?(1-Math.abs((phase%1)*2-1)):.15;
+const energy=+speed.value/100;if(playing)phase+=dt*1.85*energy;beatPulse=playing?(1-Math.abs((phase%1)*2-1)):.15;
 const glow=ctx.createRadialGradient(w*.5,h*.75,10,w*.5,h*.6,w*.8);glow.addColorStop(0,'rgba(98,29,123,'+(.16+beatPulse*.12)+')');glow.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
 ctx.strokeStyle='rgba(180,75,224,.23)';ctx.lineWidth=Math.max(1,w/800);ctx.beginPath();ctx.moveTo(0,h*.86);ctx.lineTo(w,h*.86);ctx.stroke();
 const moveIndex=Math.floor(phase/8)%danceMoves.length;
-const selected=dance.value;const mode=selected==='auto'?danceMoves[(moveIndex+danceMoves.indexOf(tr.mode))%danceMoves.length]:selected;
 const cols=Math.ceil(Math.sqrt(people.length*1.8)),rows=Math.ceil(people.length/cols),sz=Math.min(w/(cols*155),h/(rows*195),2.1);
-if(playing&&moveLabel!==mode){moveLabel=mode;status.textContent='🎶 '+(externalMode?'Din valda låt':song.options[song.selectedIndex].text)+' • Varje figur har en egen dans'}
 people.forEach((p,i)=>{const row=Math.floor(i/cols),col=i%cols,ct=Math.min(cols,people.length-row*cols);
 const sway=Math.sin(phase*.35+p.seed)*w*.035,travel=Math.sin(phase*.12+p.seed+i*.9)*w*.075;
 const px=w*((col+1)/(ct+1))+sway+travel+Math.sin(phase*.21+i*2)*w*.055,py=h*(.21+(row+.85)*.65/rows)+Math.sin(phase*.7+p.seed)*h*.038;
-const personalMove=p.move==='auto'?Object.keys(danceNames).filter(x=>x!=='auto')[(moveIndex+i*3)%12]:p.move;
+const personalMove=p.move==='auto'?danceMoves[(moveIndex+i*3)%danceMoves.length]:p.move;
 character(p,px,py,sz*(1+Math.sin(phase*.5+p.seed)*.07),phase+p.seed*.08,personalMove)});
 ctx.fillStyle='rgba(221,148,255,.8)';for(let i=0;i<20;i++){const x=(i*83.7%100)/100*w,y=(i*43.3%100)/100*h;ctx.globalAlpha=.2+.25*Math.sin(phase*2+i)**2;ctx.fillRect(x,y,2,2)}ctx.globalAlpha=1;requestAnimationFrame(render)}
-$('play').onclick=()=>toggle().catch(()=>status.textContent='Ljud kunde inte starta. Kontrollera webbläsarens ljudinställningar.');$('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);number.oninput=()=>{$('nval').textContent=number.value;reset()};volume.oninput=()=>{$('vval').textContent=volume.value+'%';if(uploaded)uploaded.volume=+volume.value/100;if(master&&playing)master.gain.setTargetAtTime(+volume.value/100*.95,audio.currentTime,.03)};speed.oninput=()=>$('sval').textContent=speed.value+'%';document.querySelectorAll('.checks input').forEach(x=>x.onchange=reset);song.onchange=()=>{if(externalMode){externalMode=false;if(uploaded)uploaded.pause();playing=false;$('play').textContent='▶ Spela musik & dans'}phase=0;if(playing){nextBeat=audio.currentTime+.08;step=0;status.textContent='🎶 Nu spelas '+song.options[song.selectedIndex].text}};addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'🕺 Alla figurer dansar med egna moves!':'Dansen pausad'};
+$('shuffle').onclick=reset;$('full').onclick=()=>document.fullscreenElement?document.exitFullscreen():screen.requestFullscreen();$('mirror').onchange=e=>screen.classList.toggle('mirrored',e.target.checked);number.oninput=()=>{$('nval').textContent=number.value;reset()};speed.oninput=()=>$('sval').textContent=speed.value+'%';document.querySelectorAll('.checks input').forEach(x=>x.onchange=reset);addEventListener('resize',resize);document.addEventListener('fullscreenchange',resize);resize();reset();requestAnimationFrame(render);
 })();
 </script></body></html>
