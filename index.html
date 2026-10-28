@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FönsterSpöken • Halloween Dance Party</title>
+<title>FönsterSpöken • Skuggornas dans</title>
 <style>
-:root{color-scheme:dark;--purple:#b17cff;--pink:#ff4fc4}*{box-sizing:border-box}body{margin:0;background:#090611;color:#f8f2ff;font:15px system-ui,sans-serif}header{padding:18px 24px;background:linear-gradient(90deg,#231239,#0e0a19);border-bottom:1px solid #46305d}h1{margin:0;font-size:clamp(23px,3vw,35px)}header p{margin:5px 0;color:#cbb7e5}.app{display:grid;grid-template-columns:310px minmax(0,1fr);min-height:calc(100vh - 95px)}aside{padding:20px;background:#171022;border-right:1px solid #3d2b50}h2{font-size:17px;margin:20px 0 10px;color:#ead8ff}h2:first-child{margin-top:0}select,button{font:inherit;color:white;border:1px solid #74538f;background:#302043;border-radius:11px;padding:12px}select{width:100%}button{cursor:pointer;transition:background .15s}button:hover{background:#52306f}button.primary{background:linear-gradient(90deg,#a148c8,#de448c);border:0;font-weight:700}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{background:#2b1d3a;border:1px solid #5d4077;border-radius:12px;padding:11px;cursor:pointer}.checks input{accent-color:#d86fff}label.line{display:block;margin:15px 0 6px}input[type=range]{width:100%;accent-color:#d46dff}.hint{font-size:12px;color:#b9a9c8;line-height:1.6}main{padding:16px;min-width:0}.screen{height:min(75vh,750px);min-height:350px;position:relative;background:#000;border:2px solid #533265;border-radius:16px;overflow:hidden}.screen canvas{display:block;width:100%;height:100%}.screen.mirrored canvas{transform:scaleX(-1)}.screen:fullscreen{height:100vh;width:100vw;border:0;border-radius:0}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}.toolbar button{flex:1;min-width:130px}.tag{display:inline-block;color:#f2b4e6;background:#402040;padding:5px 9px;border-radius:99px;font-size:12px}.status{font-size:13px;color:#bda9d2}.note{color:#a99abb;font-size:12px} @media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0}.screen{height:55vh;min-height:300px}}
+:root{color-scheme:dark;--purple:#b17cff;--pink:#ff4fc4}*{box-sizing:border-box}body{margin:0;background:#090611;color:#f8f2ff;font:15px system-ui,sans-serif}header{padding:18px 24px;background:linear-gradient(90deg,#111827,#080a12);border-bottom:1px solid #46305d}h1{margin:0;font-size:clamp(23px,3vw,35px)}header p{margin:5px 0;color:#cbb7e5}.app{display:grid;grid-template-columns:310px minmax(0,1fr);min-height:calc(100vh - 95px)}aside{padding:20px;background:#171022;border-right:1px solid #3d2b50}h2{font-size:17px;margin:20px 0 10px;color:#ead8ff}h2:first-child{margin-top:0}select,button{font:inherit;color:white;border:1px solid #74538f;background:#302043;border-radius:11px;padding:12px}select{width:100%}button{cursor:pointer;transition:background .15s}button:hover{background:#52306f}button.primary{background:linear-gradient(90deg,#a148c8,#de448c);border:0;font-weight:700}.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}.checks label{background:#2b1d3a;border:1px solid #5d4077;border-radius:12px;padding:11px;cursor:pointer}.checks input{accent-color:#d86fff}label.line{display:block;margin:15px 0 6px}input[type=range]{width:100%;accent-color:#d46dff}.hint{font-size:12px;color:#b9a9c8;line-height:1.6}main{padding:16px;min-width:0}.screen{height:min(75vh,750px);min-height:350px;position:relative;background:#000;border:1px solid #263246;border-radius:16px;overflow:hidden}.screen canvas{display:block;width:100%;height:100%}.screen.mirrored canvas{transform:scaleX(-1)}.screen:fullscreen{height:100vh;width:100vw;border:0;border-radius:0}.toolbar{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}.toolbar button{flex:1;min-width:130px}.tag{display:inline-block;color:#f2b4e6;background:#402040;padding:5px 9px;border-radius:99px;font-size:12px}.status{font-size:13px;color:#bda9d2}.note{color:#a99abb;font-size:12px} @media(max-width:760px){.app{grid-template-columns:1fr}aside{border-right:0}.screen{height:55vh;min-height:300px}}
 </style></head>
-<body><header><h1>👻 FönsterSpöken <span class="tag">DANSSTUDIO</span></h1><p>Halloweenfigurer med egna koreografier • Gratis • För projektor och fönster</p></header>
+<body><header><h1>👻 FönsterSpöken <span class="tag">SKUGGSPEL</span></h1><p>Fyra mystiska gestalter i mörkret • För projektor och fönster</p></header>
 <div class="app"><aside>
-<h2>🕺 Dansstudio</h2><p class="hint">Riktiga 3D-figurer med roterande kroppar, djup och ledade armar och ben.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
+<h2>🕺 Dansstudio</h2><p class="hint">Mystiska 3D-gestalter med skuggor, dimma och långsamma vändningar.</p><h2>🎃 Fyra dansare</h2><p class="hint">Ett spöke, en pumpa, ett skelett och ett ljus – alltid exakt fyra figurer.</p><h2>🎭 Dansmove för varje figur</h2><div id="dancerControls" style="display:grid;gap:8px"></div><p class="hint">Välj en egen dans för varje dansare. Auto växlar mellan olika dansrörelser.</p><label class="line" for="speed">Dansenergi: <output id="sval">100%</output></label><input id="speed" type="range" min="40" max="180" value="100">
 <label class="line"><input id="mirror" type="checkbox"> Spegelvänd för fönster</label>
 </aside><main>
 <div class="screen" id="screen"><canvas id="canvas" aria-label="Animerade Halloweenfigurer som dansar"></canvas></div>
@@ -15,14 +15,14 @@
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
 const $=id=>document.getElementById(id),screen=$('screen'),canvas=$('canvas'),status=$('status'),speed=$('speed');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x030108);scene.fog=new THREE.FogExp2(0x030108,.018);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x010207);scene.fog=new THREE.FogExp2(0x060b13,.037);
 const camera=new THREE.OrthographicCamera(-8,8,5,-5,.1,100);camera.position.set(0,0,25);camera.lookAt(0,0,0);
 let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;}catch(e){status.textContent='3D kräver WebGL i webbläsaren.';throw e}
-scene.add(new THREE.HemisphereLight(0xc6aaff,0x34203b,2.1));
-const light=new THREE.DirectionalLight(0xffffff,3.1);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
-const rim=new THREE.PointLight(0x8e55ff,65,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xff8c40,48,30);warm.position.set(-7,-2,6);scene.add(warm);
+scene.add(new THREE.HemisphereLight(0x627b9e,0x100c18,.85));
+const light=new THREE.DirectionalLight(0xa9b9df,1.45);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
+const rim=new THREE.PointLight(0x5469c9,80,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xff6320,32,30);warm.position.set(-7,-2,6);scene.add(warm);
 const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
-const white=mat(0xf4e9ff),dark=mat(0x211126),orange=mat(0xff8b17),bone=mat(0xf1e9db),purple=mat(0x8a4bd0),wax=mat(0xffedc8),green=mat(0x3c9c4c),gold=mat(0xffd368),pink=mat(0xffa2c7);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
+const white=mat(0xa5b5c5),dark=mat(0x070b12),orange=mat(0xa64b12),bone=mat(0x9d9c90),purple=mat(0x242332),wax=mat(0xc0b7a2),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
 const sphere=new THREE.SphereGeometry(1,32,24),cylinder=new THREE.CylinderGeometry(1,1,1,20);
 function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
@@ -30,9 +30,10 @@ function pivot(parent,x,y,z){const g=new THREE.Group();g.position.set(x,y,z);par
 function limb(parent,m,x,y,z,len,r){const g=pivot(parent,x,y,z);const mesh=new THREE.Mesh(new THREE.CapsuleGeometry(r,Math.max(.04,len-2*r),5,12),m);mesh.position.y=-len/2;mesh.castShadow=true;g.add(mesh);return g}
 function lathe(parent,material,points,x=0,y=0,z=0){const mesh=new THREE.Mesh(new THREE.LatheGeometry(points.map(([r,h])=>new THREE.Vector2(r,h)),48),material);mesh.position.set(x,y,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh}
 function curvedBone(parent,material,coords,radius){const curve=new THREE.CatmullRomCurve3(coords.map(p=>new THREE.Vector3(...p)));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,20,radius,8,false),material);mesh.castShadow=true;parent.add(mesh);return mesh}
-const stars=new THREE.Group();scene.add(stars);const starMaterial=new THREE.MeshBasicMaterial({color:0xa990d2,transparent:true,opacity:.7});for(let j=0;j<85;j++){const x=Math.sin(j*127.1)*22,y=Math.cos(j*79.3)*12;const dot=new THREE.Mesh(new THREE.SphereGeometry(.012+(j%5)*.005,6,4),starMaterial);dot.position.set(x,y,-11);stars.add(dot)}
+const mistGeo=new THREE.BufferGeometry(),mistCount=210,mistPos=new Float32Array(mistCount*3);for(let j=0;j<mistCount;j++){mistPos[j*3]=Math.sin(j*37.7)*19;mistPos[j*3+1]=Math.cos(j*19.3)*8;mistPos[j*3+2]=-2-(j%8)*.8}mistGeo.setAttribute('position',new THREE.BufferAttribute(mistPos,3));const mist=new THREE.Points(mistGeo,new THREE.PointsMaterial({color:0x647c9c,size:.16,transparent:true,opacity:.12,depthWrite:false,sizeAttenuation:true}));scene.add(mist);
+const stars=new THREE.Group();scene.add(stars);const starMaterial=new THREE.MeshBasicMaterial({color:0x758ca5,transparent:true,opacity:.36});for(let j=0;j<85;j++){const x=Math.sin(j*127.1)*22,y=Math.cos(j*79.3)*12;const dot=new THREE.Mesh(new THREE.SphereGeometry(.012+(j%5)*.005,6,4),starMaterial);dot.position.set(x,y,-11);stars.add(dot)}
 function makeFigure(type,i){
-const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);const aura=new THREE.Sprite(new THREE.SpriteMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(185,105,255,.27)');g.addColorStop(.35,'rgba(126,51,194,.13)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})(),transparent:true,depthWrite:false}));aura.scale.set(5,6,1);aura.position.z=-1.4;root.add(aura);
+const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);const aura=new THREE.Sprite(new THREE.SpriteMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(79,113,174,.21)');g.addColorStop(.35,'rgba(40,58,108,.11)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})(),transparent:true,depthWrite:false}));aura.scale.set(5,6,1);aura.position.z=-1.4;root.add(aura);
 const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle';
 const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:white;
 const detail=(color,rough=.55,metal=0)=>new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
@@ -64,13 +65,13 @@ if(ghost){
  const flame=new THREE.MeshStandardMaterial({color:0xffc23c,emissive:0xff8b00,emissiveIntensity:2,roughness:.2});
  blob(body,flame,0,1.94,.02,.21,.43,.18);
 }
-const faceY=pumpkin?1.19:skeleton?1.32:candle?.25:1.12,faceZ=pumpkin?.69:skeleton?.52:candle?.54:.77;
+const faceY=pumpkin?1.19:skeleton?1.32:candle?1.19:1.12,faceZ=pumpkin?.69:skeleton?.52:candle?.54:.77;
 for(const side of [-1,1]){
- blob(body,dark,side*.24,faceY+.09,faceZ,.115,.16,.07);
- blob(body,white,side*.27,faceY+.14,faceZ+.07,.037,.05,.02);
- if(!skeleton)blob(body,pink,side*.37,faceY-.17,faceZ+.015,.13,.07,.045);
+ blob(body,dark,side*.24,faceY+.09,faceZ,.16,.19,.075);
+ blob(body,gold,side*.27,faceY+.12,faceZ+.09,.044,.052,.024);
+ if(!skeleton && candle)blob(body,wax,side*.37,faceY-.17,faceZ+.015,.09,.035,.025);
 }
-blob(body,dark,0,faceY-.2,faceZ+.08,.13,.12,.055);
+blob(body,dark,0,faceY-.23,faceZ+.08,.105,.13,.055);
 if(skeleton){for(let j=-2;j<=2;j++)tube(body,white,j*.075,faceY-.32,faceZ+.07,.018,.11,.025)}else if(pumpkin){for(let j=-1;j<=1;j++)blob(body,gold,j*.12,faceY-.28,faceZ+.09,.045,.055,.025)}
 return {root,body,arms,forearms,legs,shins,aura,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday'][i],i};
 }
@@ -93,8 +94,8 @@ const y=horizontal?Math.sin(t*.61+i*2)*viewH*.29:(forward?-viewH/2-margin+(viewH
 p.root.position.set(x,y,-.5+Math.sin(t*.8+i)*1.2);
 const move=p.move==='auto'?Object.keys(moves).filter(k=>k!=='auto')[(Math.floor(t/7)+i*3)%13]:p.move;
 const q=t*(move==='robot'?3.1:6.4)+p.seed,step=Math.sin(q),other=Math.sin(q+Math.PI);
-const spin=move==='spin'?t*3.4:move==='robot'?Math.floor(t*1.5)*Math.PI/2:Math.sin(t*.7+i)*.85+Math.PI*2*Math.max(0,Math.min(1,(t+i*3)%17-12))/5;
-p.root.rotation.y=spin;p.aura.material.opacity=.65+Math.sin(t*2+i)*.18;p.root.rotation.z=Math.sin(t*.53+i)*.12;p.root.rotation.x=Math.sin(t*.37+i*1.7)*.14;
+const spin=move==='spin'?t*2.5:move==='robot'?Math.floor(t*1.5)*Math.PI/2:Math.sin(t*.7+i)*.85+Math.PI*2*Math.max(0,Math.min(1,(t+i*3)%17-12))/5;
+p.root.rotation.y=spin;p.aura.material.opacity=.42+Math.sin(t*.9+i)*.17;p.root.rotation.z=Math.sin(t*.53+i)*.12;p.root.rotation.x=Math.sin(t*.37+i*1.7)*.14;
 p.body.rotation.z=Math.sin(q*.5)*.15;
 p.body.rotation.x=Math.sin(q*.45)*.12;
 p.body.position.y=Math.abs(step)*.16;
@@ -118,7 +119,7 @@ if(move==='jerusalema'){p.legs[0].rotation.x=step*.95;p.legs[1].rotation.x=other
 if(move==='moonwalk'){p.legs[0].rotation.x=step*.32;p.legs[1].rotation.x=other*.32;p.body.rotation.z= -.12}
 if(move==='spin'){left.rotation.z=1.6;right.rotation.z=-1.6;p.body.rotation.z=Math.sin(q)*.12}
 });
-stars.rotation.z=Math.sin(time*.045)*.025;renderer.render(scene,camera);requestAnimationFrame(animate)
+stars.rotation.z=Math.sin(time*.045)*.025;mist.rotation.z=Math.sin(time*.08)*.09;mist.position.x=Math.sin(time*.12)*1.8;rim.intensity=62+Math.sin(time*.5)*22;warm.intensity=27+Math.sin(time*1.7)*9;renderer.render(scene,camera);requestAnimationFrame(animate)
 }
 $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pausa dans':'▶ Starta dans';status.textContent=playing?'Fyra 3D-figurer dansar och snurrar runt på hela scenen.':'Dansen pausad'};
 $('shuffle').onclick=()=>{dancers.forEach((p,i)=>{p.move=Object.keys(moves).filter(k=>k!=='auto')[(i*3+Math.floor(Math.random()*12))%13];holder.children[i].querySelector('select').value=p.move})};
