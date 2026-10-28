@@ -28,8 +28,20 @@ function chosen(){return [...document.querySelectorAll('.checks input:checked')]
 function reset(){let types=chosen();if(!types.length){types=['ghost'];document.querySelector('.checks input').checked=true}people=Array.from({length:+number.value},(_,i)=>({type:types[i%types.length],seed:Math.random()*7,size:.75+Math.random()*.35,order:i}));}
 function resize(){const r=screen.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d))}
 function sound(freq,dur,kind='sine',gain=.1,when=audio.currentTime){const o=audio.createOscillator(),v=audio.createGain();o.type=kind;o.frequency.setValueAtTime(freq,when);v.gain.setValueAtTime(.0001,when);v.gain.exponentialRampToValueAtTime(Math.max(.001,gain),when+.012);v.gain.exponentialRampToValueAtTime(.0001,when+dur);o.connect(v);v.connect(master);o.start(when);o.stop(when+dur+.02)}
-function drum(when,kind){const o=audio.createOscillator(),v=audio.createGain();o.type='sine';o.frequency.setValueAtTime(kind==='kick'?150:220,when);o.frequency.exponentialRampToValueAtTime(kind==='kick'?48:80,when+.12);v.gain.setValueAtTime(kind==='kick'?.35:.08,when);v.gain.exponentialRampToValueAtTime(.001,when+.16);o.connect(v);v.connect(master);o.start(when);o.stop(when+.17);
-if(kind==='snare'||kind==='hat'){const s=audio.createBufferSource(),filter=audio.createBiquadFilter(),n=audio.createGain();s.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=kind==='hat'?6000:1200;n.gain.setValueAtTime(kind==='hat'?.045:.14,when);n.gain.exponentialRampToValueAtTime(.001,when+(kind==='hat'?.045:.13));s.connect(filter);filter.connect(n);n.connect(master);s.start(when);s.stop(when+.15)}}
+function drum(when,kind){
+const o=audio.createOscillator(),v=audio.createGain();o.type='sine';
+o.frequency.setValueAtTime(kind==='kick'?155:220,when);
+o.frequency.exponentialRampToValueAtTime(kind==='kick'?48:80,when+.12);
+v.gain.setValueAtTime(kind==='kick'?.36:.08,when);
+v.gain.exponentialRampToValueAtTime(.001,when+.16);
+o.connect(v);v.connect(master);o.start(when);o.stop(when+.17);
+if(kind==='snare'||kind==='hat'){
+const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),n=audio.createGain();
+src.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=kind==='hat'?6000:1200;
+n.gain.setValueAtTime(kind==='hat'?.045:.14,when);
+n.gain.exponentialRampToValueAtTime(.001,when+(kind==='hat'?.045:.13));
+src.connect(filter);filter.connect(n);n.connect(master);src.start(when);src.stop(when+.15);
+}}
 function initAudio(){if(audio)return;audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();master.gain.value=+volume.value/100*.95;master.connect(audio.destination);noiseBuffer=audio.createBuffer(1,Math.round(audio.sampleRate*.25),audio.sampleRate);const a=noiseBuffer.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1}
 function tickMusic(){if(!playing||!audio)return;const tr=tracks[song.value],interval=60/tr.bpm/2;while(nextBeat<audio.currentTime+.18){const b=step%8,bar=Math.floor(step/8),v=bar%4;
 if(b%2===0)drum(nextBeat,'kick');if(b===2||b===6)drum(nextBeat,'snare');drum(nextBeat,'hat');
