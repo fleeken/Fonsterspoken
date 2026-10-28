@@ -22,7 +22,7 @@ scene.add(new THREE.HemisphereLight(0x627b9e,0x100c18,.85));
 const light=new THREE.DirectionalLight(0xa9b9df,1.45);light.position.set(-5,8,12);light.castShadow=true;light.shadow.mapSize.set(1024,1024);light.shadow.camera.left=-20;light.shadow.camera.right=20;light.shadow.camera.top=15;light.shadow.camera.bottom=-15;scene.add(light);
 const rim=new THREE.PointLight(0x5469c9,80,35);rim.position.set(5,2,-5);scene.add(rim);const warm=new THREE.PointLight(0xff6320,32,30);warm.position.set(-7,-2,6);scene.add(warm);
 const mat=(c,emissive=0x000000)=>new THREE.MeshStandardMaterial({color:c,roughness:.43,metalness:.08,emissive,emissiveIntensity:.2});
-const white=mat(0xa5b5c5),dark=mat(0x070b12),orange=mat(0xa64b12),bone=mat(0x9d9c90),purple=mat(0x242332),wax=mat(0xc0b7a2),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
+const white=mat(0x77899a),dark=mat(0x070b12),orange=mat(0x78320d),bone=mat(0x88897e),purple=mat(0x242332),wax=mat(0x8d8474),green=mat(0x294a2e),gold=mat(0xf5a63d),pink=mat(0x53404c);white.roughness=.25;orange.roughness=.68;bone.roughness=.62;wax.roughness=.48;
 const sphere=new THREE.SphereGeometry(1,32,24),cylinder=new THREE.CylinderGeometry(1,1,1,20);
 function blob(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(sphere,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
 function tube(parent,m,x,y,z,rx,ry,rz){const o=new THREE.Mesh(cylinder,m);o.position.set(x,y,z);o.scale.set(rx,ry,rz);parent.add(o);return o}
@@ -35,7 +35,7 @@ const stars=new THREE.Group();scene.add(stars);const starMaterial=new THREE.Mesh
 function makeFigure(type,i){
 const root=new THREE.Group(),body=pivot(root,0,0,0);scene.add(root);const aura=new THREE.Sprite(new THREE.SpriteMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d'),g=x.createRadialGradient(64,64,4,64,64,64);g.addColorStop(0,'rgba(79,113,174,.21)');g.addColorStop(.35,'rgba(40,58,108,.11)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})(),transparent:true,depthWrite:false}));aura.scale.set(5,6,1);aura.position.z=-1.4;root.add(aura);
 const skeleton=type==='skeleton',ghost=type==='ghost',pumpkin=type==='pumpkin',candle=type==='candle';
-const bodyMat=skeleton?bone:pumpkin?purple:candle?wax:white;
+const bodyMat=skeleton?bone:pumpkin?purple:candle?dark:white;
 const detail=(color,rough=.55,metal=0)=>new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
 const ivory=detail(0xb9b7a8,.8),deepOrange=detail(0x632c13,.94),rib=detail(0x85877f,.9),violet=detail(0x151721,.94),shine=detail(0x8b98a3,.55),bronze=detail(0x55442c,.88,.1);
 const torus=(parent,m,x,y,z,major,minor,rotation=0)=>{const mesh=new THREE.Mesh(new THREE.TorusGeometry(major,minor,10,40),m);mesh.position.set(x,y,z);mesh.rotation.z=rotation;parent.add(mesh);return mesh};
@@ -49,14 +49,14 @@ if(ghost){
  for(let j=-2;j<=2;j++)blob(body,white,j*.32,-.86,.02,.18,.48,.36);blob(body,shine,-.22,.55,.49,.07,.28,.035);for(let j=-2;j<=2;j++)blob(body,ivory,j*.27,-.85,.12,.15,.3,.35);
  blob(body,shine,-.26,.69,.54,.045,.18,.025);
 }else if(pumpkin){
- blob(body,purple,0,.02,0,.68,.85,.5);
+ lathe(body,purple,[[0,-.7],[.4,-.7],[.47,-.42],[.43,.5],[.34,.72],[0,.72]]);
  for(let j=0;j<9;j++){const a=j*Math.PI*2/9;blob(body,j%2?deepOrange:orange,Math.sin(a)*.19,1.12,Math.cos(a)*.16,.64,.69,.61)}torus(body,bronze,0,-.5,.48,.37,.045);
  tube(body,green,0,1.84,0,.13,.28,.13);
  blob(body,green,.26,1.76,0,.34,.1,.22);
 }else if(skeleton){
- curvedBone(body,bone,[[0,.72,0],[0,.15,0],[0,-.55,0]],.09);for(let j=0;j<5;j++){const yy=.48-j*.23;for(const side of [-1,1]){const boneRib=blob(body,rib,side*.28,yy,.27,.32,.065,.095);boneRib.rotation.z=side*.25}}blob(body,ivory,0,-.62,0,.49,.2,.32);
+ curvedBone(body,bone,[[0,.72,0],[0,.15,0],[0,-.55,0]],.09);for(let j=0;j<5;j++){const yy=.48-j*.23;for(const side of [-1,1]){const boneRib=blob(body,rib,side*.28,yy,.27,.32,.065,.095);boneRib.rotation.z=side*.25}}blob(body,bone,0,-.62,0,.38,.15,.25);
  for(let j=0;j<5;j++){const yy=.55-j*.22;for(const side of [-1,1])curvedBone(body,bone,[[side*.07,yy,.14],[side*.35,yy+.08,.22],[side*.46,yy-.06,.13],[side*.15,yy-.12,.05]],.055)}
- blob(body,bone,0,1.26,0,.62,.67,.49);blob(body,ivory,0,1.49,.13,.53,.43,.44);for(const side of [-1,1])blob(body,bone,side*.49,1.01,.02,.19,.32,.37);
+ blob(body,bone,0,1.26,0,.62,.67,.49);blob(body,bone,0,1.49,.13,.49,.39,.4);for(const side of [-1,1])blob(body,bone,side*.49,1.01,.02,.19,.32,.37);
  blob(body,bone,0,.79,.07,.45,.26,.44);
 }else{
  lathe(body,wax,[[0,-.79],[.62,-.79],[.67,-.62],[.67,.6],[.65,.75],[.57,.81],[.4,.77],[.2,.8],[0,.8]]);for(let j=0;j<5;j++){const x=-.47+j*.23;blob(body,ivory,x,.67+(j%2)*.06,.22,.12,.19,.19)}torus(body,bronze,0,-.61,.02,.57,.09);
@@ -66,24 +66,10 @@ if(ghost){
  blob(body,flame,0,1.94,.02,.21,.43,.18);
 }
 // Restrained horror masks: deep cavities instead of cartoon eyes, blush and smiles.
-const faceY=pumpkin?1.19:skeleton?1.33:candle?1.2:1.1;
-const faceZ=pumpkin?.73:skeleton?.53:candle?.57:.79;
-if(!candle){
- for(const side of [-1,1]){
-  const socket=blob(body,dark,side*.24,faceY+.10,faceZ,skeleton?.205:.16,skeleton?.24:.21,.065);
-  socket.rotation.z=side*(skeleton?-.22:.12);
-  if(ghost){const glimmer=blob(body,gold,side*.24,faceY+.11,faceZ+.055,.025,.045,.015);glimmer.material=new THREE.MeshBasicMaterial({color:0xa8c9dd,transparent:true,opacity:.48})}
- }
- if(skeleton){
-  blob(body,dark,0,faceY-.21,faceZ+.04,.12,.17,.07);
-  for(let j=-2;j<=2;j++)tube(body,dark,j*.085,faceY-.37,faceZ+.045,.014,.095,.02);
- }else if(pumpkin){
-  const nose=new THREE.Mesh(new THREE.ConeGeometry(.115,.2,3),dark);nose.position.set(0,faceY-.12,faceZ+.08);nose.rotation.z=Math.PI;nose.rotation.x=Math.PI/2;body.add(nose);
-  const slash=blob(body,dark,0,faceY-.37,faceZ+.025,.33,.055,.045);slash.rotation.z=-.1;
- }else{
-  blob(body,dark,0,faceY-.26,faceZ+.05,.13,.24,.055);
- }
-}
+// Kusliga masker i stället för söta tecknade ansikten.
+if(ghost){for(const side of [-1,1]){const socket=blob(body,dark,side*.24,1.04,.64,.13,.23,.035);socket.rotation.z=side*.19;}blob(body,dark,0,.68,.68,.075,.2,.028)}
+if(pumpkin){for(const side of [-1,1]){const eye=new THREE.Mesh(new THREE.ConeGeometry(.19,.31,3),dark);eye.position.set(side*.27,1.27,.72);eye.rotation.z=side*.22;body.add(eye)}for(let j=-2;j<=2;j++){const tooth=blob(body,dark,j*.115,.94,.72,.045,.09,.028);tooth.rotation.z=j*.11}}
+if(skeleton){for(const side of [-1,1]){blob(body,dark,side*.25,1.35,.47,.21,.25,.075);blob(body,dark,side*.25,1.35,.53,.11,.16,.035)}blob(body,dark,0,.96,.51,.11,.08,.06);for(let j=-3;j<=3;j++)tube(body,dark,j*.078,.82,.49,.012,.13,.02)}
 return {root,body,arms,forearms,legs,shins,aura,type,seed:i*.89+.2,move:['thriller','gangnam','shuffle','wednesday'][i],i};
 }
 const types=['ghost','pumpkin','skeleton','candle'],names=['👻 Spöke','🎃 Pumpa','💀 Skelett','🕯️ Ljus'];
