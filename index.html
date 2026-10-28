@@ -7,6 +7,13 @@
 <body><header><h1>👻 FönsterSpöken <span class="tag">DANCE PARTY</span></h1><p>Halloweenfigurer som dansar till musik • Gratis • För projektor och fönster</p></header>
 <div class="app"><aside>
 <h2>🎵 Välj låt / beat</h2><select id="song"><option value="spooky">Spooky Bounce • 112 BPM</option><option value="monster">Monster Shuffle • 128 BPM</option><option value="pumpkin">Pumpkin Funk • 100 BPM</option><option value="rave">Midnight Rave • 145 BPM</option><option value="waltz">Ghostly Groove • 90 BPM</option></select>
+<h2>🍎 Apple Music-webbspelare</h2>
+<p class="hint">Öppna låten i Apple Music → ⋯ → Dela → Kopiera inbäddningskod. Klistra in den här (eller en Apple Music-länk).</p>
+<input id="appleLink" type="text" placeholder="Klistra in Apple Music-länk eller inbäddningskod" style="width:100%;padding:11px;background:#302043;color:white;border:1px solid #74538f;border-radius:10px">
+<button id="appleLoad" type="button" style="width:100%;margin-top:8px">🍎 Visa Apple Music-spelare</button>
+<div id="appleHolder" style="margin-top:10px;display:none"><iframe id="appleFrame" title="Apple Music" allow="autoplay *; encrypted-media *" loading="lazy" style="width:100%;height:170px;border:0;border-radius:12px;background:#20132d"></iframe></div>
+<p class="hint">Tryck Play i Apple-spelaren för musiken. Tryck sedan på <b>Starta dans utan appmusik</b> för figurerna. Apple-spelaren kan kräva inloggning för hela låten.</p>
+<button id="danceOnly" type="button" style="width:100%">🕺 Starta dans utan appmusik</button>
 <h2>🎧 Spela en känd låt</h2><input id="musicfile" type="file" accept="audio/*" style="width:100%;max-width:100%"><audio id="uploadedAudio" controls style="width:100%;margin-top:10px"></audio><p class="hint">Välj en MP3 från datorn. Låten spelas lokalt och laddas inte upp till GitHub. Använd sedan dansstilen som hör till låten.</p><h2>🕺 Välj dansstil</h2><select id="dance"><option value="auto">Auto – passar låten</option><option value="shuffle">Shuffle</option><option value="floss">Floss-inspirerad</option><option value="bounce">Bounce</option><option value="robot">Robot</option><option value="wave">Wave</option><option value="macarena">Macarena – Los del Río</option><option value="gangnam">Gangnam Style – PSY</option><option value="wednesday">Wednesday-dansen – Bloody Mary</option><option value="ymca">YMCA – Village People</option><option value="chicken">Chicken Dance / Fågeldansen</option><option value="jerusalema">Jerusalema – Master KG</option><option value="thriller">Thriller – Michael Jackson (zombiedans)</option></select>
 <h2>🎃 Välj figurer</h2><div class="checks"><label><input type="checkbox" value="ghost" checked> 👻 Spöken</label><label><input type="checkbox" value="pumpkin" checked> 🎃 Pumpor</label><label><input type="checkbox" value="skeleton" checked> 💀 Skelett</label><label><input type="checkbox" value="candle" checked> 🕯️ Ljus</label></div>
 <label class="line" for="number">Antal dansare: <output id="nval">6</output></label><input id="number" type="range" min="1" max="12" value="6">
@@ -26,6 +33,15 @@ const tracks={spooky:{bpm:112,bass:[110,110,146.83,98],lead:[440,523.25,587.33,3
 let uploaded=null,uploadUrl=null,externalMode=false;let audio,master,noiseBuffer,playing=false,nextBeat=0,step=0,beatTime=0,beatPulse=0,phase=0,last=0,people=[],danceMoves=['bounce','shuffle','floss','robot','wave'],moveLabel='';
 $('musicfile').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;if(uploadUrl)URL.revokeObjectURL(uploadUrl);uploadUrl=URL.createObjectURL(file);uploaded=$('uploadedAudio');uploaded.src=uploadUrl;uploaded.volume=+volume.value/100;externalMode=true;playing=false;$('play').textContent='▶ Spela vald låt & dans';status.textContent='🎧 Vald låt: '+file.name+' – tryck Spela';if(audio&&master)master.gain.value=0;});
 $('uploadedAudio').addEventListener('ended',()=>{playing=false;$('play').textContent='▶ Spela vald låt & dans'});
+$('appleLoad').onclick=()=>{
+ const raw=$('appleLink').value.trim();let url=raw.match(/src\s*=\s*["']([^"']+)["']/i)?.[1]||raw;
+ url=url.replaceAll('&amp;','&');
+ try{const u=new URL(url);if(u.hostname!=='music.apple.com'&&u.hostname!=='embed.music.apple.com')throw Error('Ogiltig Apple Music-länk');
+ u.hostname='embed.music.apple.com';if(!/^\/(?:[a-z]{2}\/)?(?:album|song|playlist)\//i.test(u.pathname))throw Error('Välj en länk till en låt, ett album eller en spellista');
+ $('appleFrame').src=u.href;$('appleHolder').style.display='block';status.textContent='🍎 Apple Music-spelaren är laddad. Tryck Play i spelaren.'}
+ catch(e){status.textContent='⚠️ Klistra in en giltig Apple Music-länk eller inbäddningskod.'}
+};
+$('danceOnly').onclick=()=>{if(uploaded&&!uploaded.paused)uploaded.pause();if(audio&&master)master.gain.value=0;externalMode=true;playing=!playing;$('danceOnly').textContent=playing?'⏸ Pausa dans':'🕺 Starta dans utan appmusik';status.textContent=playing?'🕺 Figurerna dansar – spela låten i Apple Music-spelaren':'Dansen pausad'};
 function chosen(){return [...document.querySelectorAll('.checks input:checked')].map(x=>x.value)}
 function reset(){let types=chosen();if(!types.length){types=['ghost'];document.querySelector('.checks input').checked=true}people=Array.from({length:+number.value},(_,i)=>({type:types[i%types.length],seed:Math.random()*7,size:.75+Math.random()*.35,order:i}));}
 function resize(){const r=screen.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d))}
